@@ -4,7 +4,7 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.example.movie123"
+        applicationId "com.example.movie"
         minSdkVersion 15
         targetSdkVersion 29
         versionCode 1
@@ -31,5 +31,4 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'de.hdodenhof:circleimageview:2.2.0'
-
 }
