@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/activity_comment_write"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginVertical="10dp"
+        android:layout_marginLeft="10dp"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="군도"
+            android:textSize="26dp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_15"
+            android:layout_marginLeft="10dp"/>
+
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#34131212"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <RatingBar
+            android:id="@+id/ratingComment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:rating="4.4"
+            android:stepSize="0.1"
+            android:layout_marginTop="10dp"/>
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="평점을 입력해 주세요" />
+
+
+
+
+    </LinearLayout>
+
+
+    <EditText
+        android:id="@+id/contentsInput"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:hint="100자 이내로 작성해 주세요."
+        android:background="@drawable/write_border"
+        android:layout_margin="10dp"
+        android:maxLength="100"
+        android:gravity="top"
+        android:padding="10dp"
+        android:textSize="18dp"
+        android:textCursorDrawable="@color/colorPrimaryDark"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="저장"
+            android:layout_toLeftOf="@id/backButton"/>
+
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="취소"
+            android:layout_alignParentRight="true"/>
+
+
+    </RelativeLayout>
+
+
+</LinearLayout>
