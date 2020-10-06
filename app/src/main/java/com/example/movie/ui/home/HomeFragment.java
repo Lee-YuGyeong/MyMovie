@@ -25,6 +25,7 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
 
+    MoviePagerAdapter adapter;
 
     Fragment_home_1 fragment_home_1;
     ViewPager pager;
@@ -55,7 +56,7 @@ public class HomeFragment extends Fragment {
         pager = (ViewPager) root.findViewById(R.id.pager);
         pager.setOffscreenPageLimit(6);
 
-        MoviePagerAdapter adapter = new MoviePagerAdapter(getChildFragmentManager());
+        adapter = new MoviePagerAdapter(getChildFragmentManager());
 
 
         Fragment_home_1 fragment_home_1 = new Fragment_home_1();
@@ -76,8 +77,23 @@ public class HomeFragment extends Fragment {
         Fragment_home_6 fragment_home_6 = new Fragment_home_6();
         adapter.addItem(fragment_home_6);
 
+        pager.setClipToPadding(false);
+        pager.setPadding(120, 0, 120, 0);
+        pager.setPageMargin(60);
+//        pager.setPageTransformer(false, new ViewPager.PageTransformer() {
+//            @Override public void transformPage(View page, float position) {
+//                if (pager.getCurrentItem() == 0) {
+//                    page.setTranslationX(-120);
+//                } else if (pager.getCurrentItem() == adapter.getCount() - 1) {
+//                    page.setTranslationX(120);
+//                } else {
+//                    page.setTranslationX(0);
+//                }
+//            }
+//        });//첫번째 마지막 안보이게 하기
 
         pager.setAdapter(adapter);
+
 
         return root;
     }
