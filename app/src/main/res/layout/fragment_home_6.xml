@@ -21,7 +21,7 @@
         android:text="6. 아수라"
         android:textColor="@color/design_default_color_background"
         android:textSize="30dp"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginVertical="30dp"/>
 
 
     <ImageView
@@ -39,11 +39,14 @@
         android:textColor="@color/design_default_color_background"
         android:textSize="15dp"
         android:layout_marginTop="10dp"/>
-
     <Button
         android:id="@+id/button"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/detailbutton"
         android:text="상세보기"
-        android:layout_marginTop="15dp"/>
+        android:textColor="@color/design_default_color_background"
+        android:textSize="18dp"
+        android:textStyle="bold" />
 </LinearLayout>
