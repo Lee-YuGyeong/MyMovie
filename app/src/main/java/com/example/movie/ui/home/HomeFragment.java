@@ -1,6 +1,7 @@
 package com.example.movie.ui.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +17,19 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.movie.AppHelper;
+import com.example.movie.CommentListActivity;
 import com.example.movie.MainActivity;
 import com.example.movie.R;
+import com.example.movie.data.MovieInfo;
+import com.example.movie.data.MovieList;
+import com.example.movie.data.ResponseInfo;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -25,12 +37,15 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
 
+    String[] movieTitle;
+
     MoviePagerAdapter adapter;
 
     Fragment_home_1 fragment_home_1;
     ViewPager pager;
 
     MainActivity activity;
+
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -74,9 +89,6 @@ public class HomeFragment extends Fragment {
         Fragment_home_5 fragment_home_5 = new Fragment_home_5();
         adapter.addItem(fragment_home_5);
 
-        Fragment_home_6 fragment_home_6 = new Fragment_home_6();
-        adapter.addItem(fragment_home_6);
-
         pager.setClipToPadding(false);
         pager.setPadding(120, 0, 120, 0);
         pager.setPageMargin(60);
@@ -93,6 +105,14 @@ public class HomeFragment extends Fragment {
 //        });//첫번째 마지막 안보이게 하기
 
         pager.setAdapter(adapter);
+
+
+        String userId[] = new String[3];
+
+        if(AppHelper.requestQueue==null){
+            AppHelper.requestQueue = Volley.newRequestQueue(getContext());
+        }
+
 
 
         return root;
@@ -125,5 +145,7 @@ public class HomeFragment extends Fragment {
 
 
     }
+
+
 }
 

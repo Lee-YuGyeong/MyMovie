@@ -3,27 +3,34 @@ package com.example.movie;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.TextView;
 
-import com.example.movie.ui.home.MoiveDetailFragment;
+import com.example.movie.ui.home.MovieDetailFragment;
+
+import org.w3c.dom.Text;
 
 public class CommentWrite extends AppCompatActivity {
 
     RatingBar ratingBar;
     EditText contentsInput;
 
-    MoiveDetailFragment moiveDetailFragment;
+    MovieDetailFragment movieDetailFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comment_write);
 
-        moiveDetailFragment = new MoiveDetailFragment();
+        movieDetailFragment = new MovieDetailFragment();
 
         ratingBar = (RatingBar) findViewById(R.id.ratingComment);
         contentsInput = (EditText) findViewById(R.id.contentsInput);
@@ -51,6 +58,18 @@ public class CommentWrite extends AppCompatActivity {
 
             }
         });
+
+        Intent intent = getIntent();
+
+        TextView textView_title = (TextView) findViewById(R.id.textView_title);
+        ImageView imageView_grade = (ImageView) findViewById(R.id.imageView_grade);
+
+        textView_title.setText(intent.getStringExtra("title").toString());
+
+       // Log.d("아아",intent.getStringExtra("title"));
+        textView_title.setText(intent.getStringExtra("title").toString());
+        int resID = intent.getIntExtra("resID",0);
+        imageView_grade.setImageResource(resID);
 
 
     }
