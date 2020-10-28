@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -36,6 +37,8 @@ import com.google.gson.Gson;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MovieDetailFragment extends Fragment {
 
@@ -80,15 +83,16 @@ public class MovieDetailFragment extends Fragment {
     String key;
     String intent_title;
     int resID;
-String image;
-float intent_rating;
-int totalCount;
+    String image;
+    float intent_rating;
+    int totalCount;
 
     @Override
     public void onStart() {
         super.onStart();
         requestMovieList();
         requestCommentList();
+      //  postRequset();
     }
 
     @Override
@@ -166,11 +170,11 @@ int totalCount;
                 Intent intent = new Intent(getContext(), CommentListActivity.class);
 
                 intent.putParcelableArrayListExtra("arr", arrayList);
-             //   intent.putExtra("key", key);
+                //   intent.putExtra("key", key);
                 intent.putExtra("title", intent_title);
                 intent.putExtra("resID", resID);
-                intent.putExtra("rating",intent_rating);
-                intent.putExtra("totalCount",totalCount);
+                intent.putExtra("rating", intent_rating);
+                intent.putExtra("totalCount", totalCount);
 
 
                 startActivity(intent);
@@ -221,7 +225,7 @@ int totalCount;
         return rootView;
     }
 
-    public void goToCommentWrite(){
+    public void goToCommentWrite() {
 
 //        Intent intent = new Intent(getContext(), CommentListActivity.class);
 //        intent.putExtra("title", intent_title);
@@ -274,9 +278,8 @@ int totalCount;
             CommentList commentList = gson.fromJson(response, CommentList.class);
 
             totalCount = info.totalCount;
-            Log.d("아아",totalCount + "");
 
-            if(adapter.isEmpty()) {
+            if (adapter.isEmpty()) {
                 for (int i = 0; i < commentList.result.size(); i++) {
 
                     adapter.addItem(new CommentItem(R.drawable.user1, commentList.result.get(i).writer, commentList.result.get(i).time, commentList.result.get(i).contents, commentList.result.get(i).rating));

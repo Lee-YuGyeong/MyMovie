@@ -34,22 +34,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.view.Menu;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
 
-
-   // TextView textView;
-
-
     Fragment_home_1 fragment_home_1;
     Fragment_home_2 fragment_home_2;
     MovieDetailFragment movieDetailFragment;
     CommentWrite commentWrite;
-
-    String[] movieTitle = {"1zz","2ee","3ff"};
-    HomeFragment homeFragment;
 
     @Override
     protected void onStart() {
@@ -63,22 +57,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
-        //    textView = (TextView) findViewById(R.id.textView);
-
         fragment_home_1 = new Fragment_home_1();
         fragment_home_2 = new Fragment_home_2();
         movieDetailFragment = new MovieDetailFragment();
         commentWrite = new CommentWrite();
-
-//        movieTitle = new String[6];
-//        homeFragment = new HomeFragment();
-//
-//
-//        Bundle bundle = new Bundle();
-//        bundle.putStringArray("state",movieTitle);
-//        homeFragment.setArguments(bundle);
-
 
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -104,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
+        networkStatus();
 
         if(AppHelper.requestQueue==null){
             AppHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -122,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        println("응답 받음 -> " +response);
 
                         processResponse(response);
                     }
@@ -130,13 +112,11 @@ public class MainActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        println("에러 발생 ->" +error.getMessage());
                     }
                 }
         );
         request.setShouldCache(false);
         AppHelper.requestQueue.add(request);
-        println("영화목록 요청 보냄.");
     }
 
     public void processResponse(String response){
@@ -145,12 +125,9 @@ public class MainActivity extends AppCompatActivity {
         ResponseInfo info = gson.fromJson(response, ResponseInfo.class);
         if(info.code == 200) {
             MovieList movieList = gson.fromJson(response,MovieList.class);
-            println("영화 갯수 : " + movieList.result.size());
 
             for(int i=0;i<movieList.result.size();i++){
                 MovieInfo movieInfo = movieList.result.get(i);
-                println("영화 #" + i + ":" + movieInfo.id + "," + movieInfo.title + "," + movieInfo.grade);
-          //      movieTitle[i] = movieInfo.title;
 
             }
 
@@ -158,9 +135,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void println(String data){
-      //  textView.append(data + "\n");
-    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -184,6 +159,17 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+    public void networkStatus(){
+        int status =  NetworkStatus.getConnectivityStatus(getApplicationContext());
+        if (status == NetworkStatus.TYPE_MOBILE){
+            Toast.makeText(getApplicationContext(),"인터넷이 연결되어 있습니다. 데이터베이스에 저장함.",Toast.LENGTH_LONG).show();
+        }else if (status == NetworkStatus.TYPE_WIFI){
+            Toast.makeText(getApplicationContext(),"인터넷이 연결되어 있습니다. 데이터베이스에 저장함.",Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(getApplicationContext(),"인터넷이 연결되어 있지 않습니다. 데이터베이스로부터 로딩함.",Toast.LENGTH_LONG).show();
+        }
+    }//네트워크 연결 여부
 
 
 

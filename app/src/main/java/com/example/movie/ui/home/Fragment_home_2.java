@@ -111,7 +111,7 @@ public class Fragment_home_2 extends Fragment {
 
             String url = movieList.result.get(1).image;
 
-            Glide.with(activity).load(url).into(imageView);
+            Glide.with(this).load(url).into(imageView);
 
             textView.setText("2. " + movieList.result.get(1).title.toString());
             textView2.setText("예매율  " + movieList.result.get(1).reservation_rate + "% | " + movieList.result.get(1).grade + "세 관람가 | " + movieList.result.get(1).date + " 개봉");
