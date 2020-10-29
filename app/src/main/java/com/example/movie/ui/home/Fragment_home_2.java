@@ -20,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
 import com.example.movie.AppHelper;
+import com.example.movie.OutlineDatabase;
 import com.example.movie.MainActivity;
 import com.example.movie.MovieVo;
 import com.example.movie.NetworkStatus;
@@ -142,7 +143,7 @@ public class Fragment_home_2 extends Fragment {
     public void setDatabaseData(){
 
         list = new ArrayList<MovieVo>();
-        list = AppHelper.selectOutlineList();
+        list = OutlineDatabase.selectOutlineList();
 
         textView.setText("2. " + list.get(1).getTitle());
         textView2.setText("예매율  " + list.get(1).getReservation_rate() + "% | " + list.get(1).getGrade() + "세 관람가 | " + list.get(1).getDateValue() + " 개봉");

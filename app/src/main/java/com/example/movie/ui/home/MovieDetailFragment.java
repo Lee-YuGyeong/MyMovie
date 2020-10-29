@@ -13,11 +13,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.amitshekhar.DebugDB;
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -28,6 +30,11 @@ import com.example.movie.AppHelper;
 import com.example.movie.CommentListActivity;
 import com.example.movie.CommentWrite;
 import com.example.movie.MainActivity;
+import com.example.movie.MovieDetailDatabase;
+import com.example.movie.MovieDetailVo;
+import com.example.movie.MovieVo;
+import com.example.movie.NetworkStatus;
+import com.example.movie.OutlineDatabase;
 import com.example.movie.R;
 import com.example.movie.data.CommentList;
 import com.example.movie.data.MovieList;
@@ -42,6 +49,7 @@ import java.util.Map;
 
 public class MovieDetailFragment extends Fragment {
 
+    ArrayList<MovieDetailVo> list;
 
     CommentAdapter adapter;
     ListView listView;
@@ -90,9 +98,7 @@ public class MovieDetailFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        requestMovieList();
-        requestCommentList();
-      //  postRequset();
+        networkStatus();
     }
 
     @Override
@@ -117,6 +123,7 @@ public class MovieDetailFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_movie_datail, container, false);
+
 
         key = getArguments().getString("key");
 
@@ -223,19 +230,6 @@ public class MovieDetailFragment extends Fragment {
 
 
         return rootView;
-    }
-
-    public void goToCommentWrite() {
-
-//        Intent intent = new Intent(getContext(), CommentListActivity.class);
-//        intent.putExtra("title", intent_title);
-//        intent.putExtra("resID", resID);
-//
-//        Bundle bundle = new Bundle();
-//        bundle.putString("title",intent_title);
-//     //   bundle.putString("resID",resID);
-//        activity.setArguments(bundle);
-
     }
 
 
@@ -354,9 +348,6 @@ public class MovieDetailFragment extends Fragment {
             intent_title = movieList.result.get(0).title.toString();
             intent_rating = movieList.result.get(0).audience_rating;
 
-            goToCommentWrite();
-
-
         }
     }
 ///////////////////////////////////////api 끝
@@ -474,15 +465,65 @@ public class MovieDetailFragment extends Fragment {
                 arrayList.add(new CommentItem(R.drawable.user1, "lyg64**", "5분전", contents, rating));//
 
 
-//                Intent intent1 = new Intent();
-//                intent1.putExtra("contents",contents);
-//                intent1.putExtra("rating",rating);
-//                setResult(RESULT_OK, intent);
             }
         }
 
 
     }
 
+    /////////////db 시작
+    public void networkStatus() {
+        int status = NetworkStatus.getConnectivityStatus(getContext());
+        if (status == NetworkStatus.TYPE_MOBILE) {
+            requestMovieList();
+            requestCommentList();
+        } else if (status == NetworkStatus.TYPE_WIFI) {
+            requestMovieList();
+            requestCommentList();
+        } else {
+            setDatabaseData();
+        }
+    }//네트워크 연결 여부
+
+    public void setDatabaseData() {
+
+        list = new ArrayList<MovieDetailVo>();
+
+        list = MovieDetailDatabase.selectDetailList();
+
+        int i = Integer.parseInt(key) - 1;
+
+        String url = list.get(i).getThumb();
+        Glide.with(getActivity().getApplicationContext()).load(url).into(imageView);
+
+        image = "@drawable/ic_";
+        image += list.get(i).getGrade();
+        String packageName = getContext().getPackageName();
+        resID = getResources().getIdentifier(image, "drawable", packageName);
+        imageView_grade.setImageResource(resID);
+
+        textView_title.setText(list.get(i).getTitle());
+        textView_titleDetail.setText(list.get(i).getDateValue() + "\n" + list.get(i).getGenre() + " / " + list.get(i).getDuration() + "분");
+        likeCountView.setText(String.valueOf(list.get(i).get_like()));
+        dislikeCountView.setText(String.valueOf(list.get(i).getDislike()));
+        likeCount = list.get(i).get_like();
+        dislikeCount = list.get(i).getDislike();
+        textView_rank.setText(list.get(i).getReservation_grade() + "위 " + list.get(i).getReservation_rate() + "%");
+        textView_score.setText(String.valueOf(list.get(i).getAudience_rating()));
+        ratingBar.setRating(list.get(i).getAudience_rating() / 2);
+        String audience = currentpoint(String.valueOf(list.get(i).getAudience()));
+        textView_audience.setText(audience + "명");
+        textView_text.setText(list.get(i).getSynopsis());
+        textView_director.setText(list.get(i).getDirector());
+        textView_actor.setText(list.get(i).getActor());
+
+        intent_title = list.get(i).getTitle();
+        intent_rating = list.get(i).getAudience_rating();
+
+
+    }
+
+
+    ////////////db 끝
 
 }

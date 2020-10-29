@@ -41,6 +41,7 @@ public class MovieInfo {
     public String thumb;
     public String image;
 
+    public String videos;
     public String photos;
     public String outlinks;
     public String genre;

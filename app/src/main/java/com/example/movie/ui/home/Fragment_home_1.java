@@ -2,7 +2,6 @@ package com.example.movie.ui.home;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
 import com.example.movie.AppHelper;
+import com.example.movie.OutlineDatabase;
 import com.example.movie.MainActivity;
 import com.example.movie.MovieVo;
 import com.example.movie.NetworkStatus;
@@ -132,7 +132,6 @@ public class Fragment_home_1 extends Fragment {
             requestMovieList();
         } else {
             setDatabaseData();
-            Toast.makeText(getActivity(),"인터넷이 연결되어 있지 않습니다. 데이터베이스로부터 로딩함.",Toast.LENGTH_LONG).show();
         }
     }
 
@@ -140,7 +139,7 @@ public class Fragment_home_1 extends Fragment {
 
         list = new ArrayList<MovieVo>();
 
-        list = AppHelper.selectOutlineList();
+        list = OutlineDatabase.selectOutlineList();
 
         textView.setText("1. " + list.get(0).getTitle());
         textView2.setText("예매율  " + list.get(0).getReservation_rate() + "% | " + list.get(0).getGrade() + "세 관람가 | " + list.get(0).getDateValue() + " 개봉");
