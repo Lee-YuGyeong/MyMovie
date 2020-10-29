@@ -3,6 +3,7 @@ package com.example.movie;
 import android.os.Bundle;
 
 
+import com.amitshekhar.DebugDB;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -18,6 +19,7 @@ import com.example.movie.ui.home.MovieDetailFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;
@@ -45,10 +47,11 @@ public class MainActivity extends AppCompatActivity {
     MovieDetailFragment movieDetailFragment;
     CommentWrite commentWrite;
 
+
     @Override
     protected void onStart() {
         super.onStart();
-        requestMovieList();
+        networkStatus();
     }
 
     @Override
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         movieDetailFragment = new MovieDetailFragment();
         commentWrite = new CommentWrite();
 
+        database();
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -86,17 +90,16 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        networkStatus();
 
-        if(AppHelper.requestQueue==null){
+        if (AppHelper.requestQueue == null) {
             AppHelper.requestQueue = Volley.newRequestQueue(getApplicationContext());
         }
 
     }
 
-    public void requestMovieList(){
+    public void requestMovieList() {
 
-        String url = "http://"+AppHelper.host + ":" + AppHelper.port + "/movie/readMovieList";
+        String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readMovieList";
         url += "?" + "type=1";
 
         StringRequest request = new StringRequest(
@@ -105,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-
                         processResponse(response);
                     }
                 },
@@ -119,22 +121,32 @@ public class MainActivity extends AppCompatActivity {
         AppHelper.requestQueue.add(request);
     }
 
-    public void processResponse(String response){
+    public void processResponse(String response) {
         Gson gson = new Gson();
 
         ResponseInfo info = gson.fromJson(response, ResponseInfo.class);
-        if(info.code == 200) {
-            MovieList movieList = gson.fromJson(response,MovieList.class);
+        if (info.code == 200) {
+            MovieList movieList = gson.fromJson(response, MovieList.class);
 
-            for(int i=0;i<movieList.result.size();i++){
-                MovieInfo movieInfo = movieList.result.get(i);
+            for (int i = 0; i < movieList.result.size(); i++) {
+
+                insertOutlineData(movieList.result.get(i).id,
+                        movieList.result.get(i).title,
+                        movieList.result.get(i).title_eng,
+                        movieList.result.get(i).date,
+                        movieList.result.get(i).user_rating,
+                        movieList.result.get(i).audience_rating,
+                        movieList.result.get(i).reviewer_rating,
+                        movieList.result.get(i).reservation_rate,
+                        movieList.result.get(i).reservation_grade,
+                        movieList.result.get(i).grade,
+                        movieList.result.get(i).thumb,
+                        movieList.result.get(i).image);
 
             }
-
         }
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -149,29 +161,68 @@ public class MainActivity extends AppCompatActivity {
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
-    public void onFragmentChanged(int index,String key){
-        if (index == 0){
+
+    public void onFragmentChanged(int index, String key) {
+        if (index == 0) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, movieDetailFragment).addToBackStack(null).commit();
 
             Bundle bundle = new Bundle();
-            bundle.putString("key",key);
+            bundle.putString("key", key);
             movieDetailFragment.setArguments(bundle);
 
         }
     }
 
-    public void networkStatus(){
-        int status =  NetworkStatus.getConnectivityStatus(getApplicationContext());
-        if (status == NetworkStatus.TYPE_MOBILE){
-            Toast.makeText(getApplicationContext(),"인터넷이 연결되어 있습니다. 데이터베이스에 저장함.",Toast.LENGTH_LONG).show();
-        }else if (status == NetworkStatus.TYPE_WIFI){
-            Toast.makeText(getApplicationContext(),"인터넷이 연결되어 있습니다. 데이터베이스에 저장함.",Toast.LENGTH_LONG).show();
-        }else {
-            Toast.makeText(getApplicationContext(),"인터넷이 연결되어 있지 않습니다. 데이터베이스로부터 로딩함.",Toast.LENGTH_LONG).show();
+    public void networkStatus() {
+        int status = NetworkStatus.getConnectivityStatus(getApplicationContext());
+        if (status == NetworkStatus.TYPE_MOBILE) {
+            requestMovieList();
+            Toast.makeText(getApplicationContext(), "인터넷이 연결되어 있습니다. 데이터베이스에 저장함.", Toast.LENGTH_LONG).show();
+        } else if (status == NetworkStatus.TYPE_WIFI) {
+            requestMovieList();
+            Toast.makeText(getApplicationContext(), "인터넷이 연결되어 있습니다. 데이터베이스에 저장함.", Toast.LENGTH_LONG).show();
+        } else {
+             Toast.makeText(getApplicationContext(),"인터넷이 연결되어 있지 않습니다. 데이터베이스로부터 로딩함.",Toast.LENGTH_LONG).show();
         }
     }//네트워크 연결 여부
 
 
+    public void database() {
+        DebugDB.getAddressLog(); //log http 검색
+
+        AppHelper.openDatabase(getApplicationContext(), "movie");
+        AppHelper.createTable("outline"); //메모리 만들어지면서 자동
+
+    }
+
+    public void insertOutlineData(int id,
+                                  String title,
+                                  String title_eng,
+                                  String dateValue,
+                                  float user_rating,
+                                  float audience_rating,
+                                  float reviewer_rating,
+                                  float reservation_rate,
+                                  int reservation_grade,
+                                  int grade,
+                                  String thumb,
+                                  String image) {
+
+        AppHelper.insertOutlineData(id,
+                title,
+                title_eng,
+                dateValue,
+                user_rating,
+                audience_rating,
+                reviewer_rating,
+                reservation_rate,
+                reservation_grade,
+                grade,
+                thumb,
+                image);
+
+
+    }
 
 
 }

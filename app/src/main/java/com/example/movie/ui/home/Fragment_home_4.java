@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,10 +21,14 @@ import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
 import com.example.movie.AppHelper;
 import com.example.movie.MainActivity;
+import com.example.movie.MovieVo;
+import com.example.movie.NetworkStatus;
 import com.example.movie.R;
 import com.example.movie.data.MovieList;
 import com.example.movie.data.ResponseInfo;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
 
 public class Fragment_home_4 extends Fragment {
 
@@ -33,13 +38,12 @@ public class Fragment_home_4 extends Fragment {
     ImageView imageView;
 
     MainActivity activity;
-
-    String movieTitle;
+    ArrayList<MovieVo> list;
 
     @Override
     public void onStart() {
         super.onStart();
-        requestMovieList();
+        networkStatus();
     }
 
     @Override
@@ -118,6 +122,32 @@ public class Fragment_home_4 extends Fragment {
             textView2.setText("예매율  " + movieList.result.get(3).reservation_rate + "% | " + movieList.result.get(3).grade + "세 관람가 | " + movieList.result.get(3).date + " 개봉");
 
         }
+    }
+
+
+    public void networkStatus() {
+        int status = NetworkStatus.getConnectivityStatus(getActivity());
+        if (status == NetworkStatus.TYPE_MOBILE) {
+            requestMovieList();
+        } else if (status == NetworkStatus.TYPE_WIFI) {
+            requestMovieList();
+        } else {
+            setDatabaseData();
+            Toast.makeText(getActivity(),"인터넷이 연결되어 있지 않습니다. 데이터베이스로부터 로딩함.",Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void setDatabaseData(){
+
+        list = new ArrayList<MovieVo>();
+        list = AppHelper.selectOutlineList();
+
+        textView.setText("4. " + list.get(3).getTitle());
+        textView2.setText("예매율  " + list.get(3).getReservation_rate() + "% | " + list.get(3).getGrade() + "세 관람가 | " + list.get(3).getDateValue() + " 개봉");
+
+        String url = list.get(3).getImage();
+        Glide.with(getActivity()).load(url).into(imageView);
+
     }
 
 
