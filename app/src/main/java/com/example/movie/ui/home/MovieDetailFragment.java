@@ -3,7 +3,6 @@ package com.example.movie.ui.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,14 +12,11 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.amitshekhar.DebugDB;
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -30,26 +26,27 @@ import com.example.movie.AppHelper;
 import com.example.movie.CommentListActivity;
 import com.example.movie.CommentWrite;
 import com.example.movie.MainActivity;
-import com.example.movie.MovieDetailDatabase;
-import com.example.movie.MovieDetailVo;
-import com.example.movie.MovieVo;
+import com.example.movie.database.CommentDatabase;
+import com.example.movie.database.CommentVo;
+import com.example.movie.database.MovieDetailDatabase;
+import com.example.movie.database.MovieDetailVo;
 import com.example.movie.NetworkStatus;
-import com.example.movie.OutlineDatabase;
 import com.example.movie.R;
 import com.example.movie.data.CommentList;
 import com.example.movie.data.MovieList;
 import com.example.movie.data.ResponseInfo;
 import com.google.gson.Gson;
 
+import org.w3c.dom.Comment;
+
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class MovieDetailFragment extends Fragment {
 
     ArrayList<MovieDetailVo> list;
+    ArrayList<CommentVo> CommentList;
 
     CommentAdapter adapter;
     ListView listView;
@@ -482,6 +479,7 @@ public class MovieDetailFragment extends Fragment {
             requestCommentList();
         } else {
             setDatabaseData();
+            setCommentDatabaseData();
         }
     }//네트워크 연결 여부
 
@@ -520,6 +518,22 @@ public class MovieDetailFragment extends Fragment {
         intent_title = list.get(i).getTitle();
         intent_rating = list.get(i).getAudience_rating();
 
+
+    }
+    public void setCommentDatabaseData(){
+
+
+        CommentList = new ArrayList<CommentVo>();
+
+        CommentList = CommentDatabase.selectCommentList(Integer.parseInt(key));
+
+        for(int i=0;i<CommentList.size();i++){
+            adapter.addItem(new CommentItem(R.drawable.user1, CommentList.get(i).getWriter(), CommentList.get(i).getTime(), CommentList.get(i).getContents(), CommentList.get(i).getRating()));
+            arrayList.add(new CommentItem(R.drawable.user1, CommentList.get(i).getWriter(), CommentList.get(i).getTime(), CommentList.get(i).getContents(), CommentList.get(i).getRating()));
+        }
+        adapter.notifyDataSetChanged();
+
+        totalCount =  CommentList.get(CommentList.size()-1).getTotalCount();
 
     }
 

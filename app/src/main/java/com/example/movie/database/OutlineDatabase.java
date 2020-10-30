@@ -1,9 +1,11 @@
-package com.example.movie;
+package com.example.movie.database;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+
+import com.example.movie.database.MovieVo;
 
 import java.util.ArrayList;
 

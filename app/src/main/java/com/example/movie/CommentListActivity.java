@@ -99,8 +99,8 @@ public class CommentListActivity extends AppCompatActivity {
         ratingBar.setRating(intent.getFloatExtra("rating",0f)/2);
 
         String totalCount = String.valueOf(intent.getIntExtra("totalCount",0));
-        currentpoint(totalCount);
-        textView_rating.setText((intent.getFloatExtra("rating",0f)) + "  (" +totalCount + "명 참여)");
+
+        textView_rating.setText((intent.getFloatExtra("rating",0f)) + "  (" +currentpoint(totalCount) + "명 참여)");
 
 
 

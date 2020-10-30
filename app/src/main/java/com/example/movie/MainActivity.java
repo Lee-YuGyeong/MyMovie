@@ -9,11 +9,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
 import com.example.movie.data.CommentList;
 import com.example.movie.data.MovieList;
 import com.example.movie.data.ResponseInfo;
-import com.example.movie.ui.home.CommentItem;
+import com.example.movie.database.CommentDatabase;
+import com.example.movie.database.MovieDetailDatabase;
+import com.example.movie.database.OutlineDatabase;
 import com.example.movie.ui.home.Fragment_home_1;
 import com.example.movie.ui.home.Fragment_home_2;
 import com.example.movie.ui.home.MovieDetailFragment;
@@ -97,79 +98,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void urlCount(){
-
-        requestMovieDetailList(1);
-        requestMovieDetailList(2);
-        requestMovieDetailList(3);
-        requestMovieDetailList(4);
-        requestMovieDetailList(5);
-
-
-    }
-
-    public void requestMovieDetailList(int i) {
-
-        // http://boostcourse-appapi.connect.or.kr:10000/movie/readMovie?id=1
-
-        String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readMovie";
-        url += "?" + "id=" + String.valueOf(i);
-
-        Log.d("아아33:",url);
-
-
-        StringRequest request = new StringRequest(
-                Request.Method.GET,
-                url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        processResponse2(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                    }
-                }
-        );
-        request.setShouldCache(false);
-        AppHelper.requestQueue.add(request);
-    }
-
-    public void processResponse2(String response) {
-        Gson gson = new Gson();
-
-        ResponseInfo info = gson.fromJson(response, ResponseInfo.class);
-        if (info.code == 200) {
-            MovieList movieList = gson.fromJson(response, MovieList.class);
-
-                MovieDetailDatabase.insertDetailData(movieList.result.get(0).id,
-                        movieList.result.get(0).title,
-                        movieList.result.get(0).date,
-                        movieList.result.get(0).user_rating,
-                        movieList.result.get(0).audience_rating,
-                        movieList.result.get(0).reviewer_rating,
-                        movieList.result.get(0).reservation_rate,
-                        movieList.result.get(0).reservation_grade,
-                        movieList.result.get(0).grade,
-                        movieList.result.get(0).thumb,
-                        movieList.result.get(0).image,
-                        movieList.result.get(0).photos,
-                        movieList.result.get(0).videos,
-                        movieList.result.get(0).outlinks,
-                        movieList.result.get(0).genre,
-                        movieList.result.get(0).duration,
-                        movieList.result.get(0).audience,
-                        movieList.result.get(0).synopsis,
-                        movieList.result.get(0).director,
-                        movieList.result.get(0).actor,
-                        movieList.result.get(0).like,
-                        movieList.result.get(0).dislike);
-
-        }
-    }
-
     public void requestMovieList() {
 
         String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readMovieList";
@@ -201,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         if (info.code == 200) {
             MovieList movieList = gson.fromJson(response, MovieList.class);
 
-            for (int i = 0; i <  movieList.result.size(); i++) {
+            for (int i = 0; i < movieList.result.size(); i++) {
 
                 OutlineDatabase.insertOutlineData(movieList.result.get(i).id,
                         movieList.result.get(i).title,
@@ -220,6 +148,141 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
+    public void urlCount(){
+
+        requestMovieDetailList(1);
+        requestMovieDetailList(2);
+        requestMovieDetailList(3);
+        requestMovieDetailList(4);
+        requestMovieDetailList(5);
+
+
+    }
+
+    public void requestMovieDetailList(int i) {
+
+        // http://boostcourse-appapi.connect.or.kr:10000/movie/readMovie?id=1
+
+        String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readMovie";
+        url += "?" + "id=" + String.valueOf(i);
+
+
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        processResponse2(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                }
+        );
+        request.setShouldCache(false);
+        AppHelper.requestQueue.add(request);
+    }
+
+    public void processResponse2(String response) {
+        Gson gson = new Gson();
+
+        ResponseInfo info = gson.fromJson(response, ResponseInfo.class);
+        if (info.code == 200) {
+            MovieList movieList = gson.fromJson(response, MovieList.class);
+
+            MovieDetailDatabase.insertDetailData(movieList.result.get(0).id,
+                    movieList.result.get(0).title,
+                    movieList.result.get(0).date,
+                    movieList.result.get(0).user_rating,
+                    movieList.result.get(0).audience_rating,
+                    movieList.result.get(0).reviewer_rating,
+                    movieList.result.get(0).reservation_rate,
+                    movieList.result.get(0).reservation_grade,
+                    movieList.result.get(0).grade,
+                    movieList.result.get(0).thumb,
+                    movieList.result.get(0).image,
+                    movieList.result.get(0).photos,
+                    movieList.result.get(0).videos,
+                    movieList.result.get(0).outlinks,
+                    movieList.result.get(0).genre,
+                    movieList.result.get(0).duration,
+                    movieList.result.get(0).audience,
+                    movieList.result.get(0).synopsis,
+                    movieList.result.get(0).director,
+                    movieList.result.get(0).actor,
+                    movieList.result.get(0).like,
+                    movieList.result.get(0).dislike);
+
+        }
+    }
+
+    public void commentCrlCount(){
+
+        requestComment(1);
+        requestComment(2);
+        requestComment(3);
+        requestComment(4);
+        requestComment(5);
+
+
+    }
+
+    public void requestComment(int i) {
+
+        //http://boostcourse-appapi.connect.or.kr:10000/movie/readCommentList?id=1
+
+        String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readCommentList";
+        url += "?" + "id=" + i;
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        processResponse3(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                }
+        );
+        request.setShouldCache(false);
+        AppHelper.requestQueue.add(request);
+    }
+
+    public void processResponse3(String response) {
+        Gson gson = new Gson();
+
+        ResponseInfo info = gson.fromJson(response, ResponseInfo.class);
+        if (info.code == 200) {
+            CommentList commentList = gson.fromJson(response, CommentList.class);
+
+            for (int i = 0; i < commentList.result.size(); i++) {
+                CommentDatabase.insertCommentData(commentList.result.get(i).id,
+                        commentList.result.get(i).writer,
+                        commentList.result.get(i).movieId,
+                        commentList.result.get(i).writer_image,
+                        commentList.result.get(i).time,
+                        commentList.result.get(i).timestamp,
+                        commentList.result.get(i).rating,
+                        commentList.result.get(i).contents,
+                        commentList.result.get(i).recommend,
+                        info.totalCount);
+
+
+            }
+        }
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -251,10 +314,12 @@ public class MainActivity extends AppCompatActivity {
         if (status == NetworkStatus.TYPE_MOBILE) {
             requestMovieList();
             urlCount();
+            commentCrlCount();
             Toast.makeText(getApplicationContext(), "인터넷이 연결되어 있습니다. 데이터베이스에 저장함.", Toast.LENGTH_LONG).show();
         } else if (status == NetworkStatus.TYPE_WIFI) {
             requestMovieList();
             urlCount();
+            commentCrlCount();
             Toast.makeText(getApplicationContext(), "인터넷이 연결되어 있습니다. 데이터베이스에 저장함.", Toast.LENGTH_LONG).show();
         } else {
             Toast.makeText(getApplicationContext(), "인터넷이 연결되어 있지 않습니다. 데이터베이스로부터 로딩함.", Toast.LENGTH_LONG).show();
@@ -271,36 +336,9 @@ public class MainActivity extends AppCompatActivity {
         MovieDetailDatabase.openDatabase(getApplicationContext(), "movie");
         MovieDetailDatabase.createTable("detail"); //메모리 만들어지면서 자동
 
+        CommentDatabase.openDatabase(getApplicationContext(), "movie");
+        CommentDatabase.createTable("comment");
 
     }
-
-
-    public void insertDetailData(int id,
-                                 String title,
-                                 String dateValue,
-                                 float user_rating,
-                                 float audience_rating,
-                                 float reviewer_rating,
-                                 float reservation_rate,
-                                 int reservation_grade,
-                                 int grade,
-                                 String thumb,
-                                 String image,
-                                 String photos,
-                                 String videos,
-                                 String outlinks,
-                                 String genre,
-                                 int duration,
-                                 int audience,
-                                 String synopsis,
-                                 String director,
-                                 String actor,
-                                 int _like,
-                                 int dislike) {
-
-        MovieDetailDatabase.insertDetailData(id, title, dateValue, user_rating, audience_rating, reviewer_rating, reservation_rate, reservation_grade, grade, thumb, image, photos, videos, outlinks, genre, duration, audience, synopsis, director, actor, _like, dislike);
-
-    }
-
 
 }
