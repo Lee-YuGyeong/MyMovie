@@ -16,6 +16,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -26,6 +28,8 @@ import com.example.movie.AppHelper;
 import com.example.movie.CommentListActivity;
 import com.example.movie.CommentWrite;
 import com.example.movie.MainActivity;
+import com.example.movie.MoviePhotoAdapter;
+import com.example.movie.MoviePhotoItem;
 import com.example.movie.database.CommentDatabase;
 import com.example.movie.database.CommentVo;
 import com.example.movie.database.MovieDetailDatabase;
@@ -35,6 +39,7 @@ import com.example.movie.R;
 import com.example.movie.data.CommentList;
 import com.example.movie.data.MovieList;
 import com.example.movie.data.ResponseInfo;
+import com.example.movie.ui.RecyclerViewDecoration;
 import com.google.gson.Gson;
 
 import org.w3c.dom.Comment;
@@ -92,6 +97,9 @@ public class MovieDetailFragment extends Fragment {
     float intent_rating;
     int totalCount;
 
+    RecyclerView recyclerView;
+    MoviePhotoAdapter moviePhotoAdapter;
+
     @Override
     public void onStart() {
         super.onStart();
@@ -114,7 +122,7 @@ public class MovieDetailFragment extends Fragment {
 
     }
 
-
+//https://www.youtube.com/watch?v=VJAPZ9cIbs0&feature=youtu.be
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -124,7 +132,6 @@ public class MovieDetailFragment extends Fragment {
 
         key = getArguments().getString("key");
 
-        //////////// i = getArguments().getInt("key");
         imageView = (ImageView) rootView.findViewById(R.id.imageView);
         imageView_grade = (ImageView) rootView.findViewById(R.id.imageView_grade);
         textView_title = (TextView) rootView.findViewById(R.id.textView_title);
@@ -136,6 +143,28 @@ public class MovieDetailFragment extends Fragment {
         textView_text = (TextView) rootView.findViewById(R.id.textView_text);
         textView_director = (TextView) rootView.findViewById(R.id.textView_director);
         textView_actor = (TextView) rootView.findViewById(R.id.textView_actor);
+
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+        moviePhotoAdapter = new MoviePhotoAdapter(getContext());
+//
+//        moviePhotoAdapter.addItem(new MoviePhotoItem(R.drawable.image22));
+//        moviePhotoAdapter.addItem(new MoviePhotoItem(R.drawable.image22));
+//        moviePhotoAdapter.addItem(new MoviePhotoItem(R.drawable.image33));
+
+
+        String url2 = "http://movie.phinf.naver.net/20171010_164/1507615090097Sml1w_JPEG/movie_image.jpg?type=m665_443_2";
+        moviePhotoAdapter.addItem(new MoviePhotoItem(url2));
+        moviePhotoAdapter.addItem(new MoviePhotoItem(url2));
+        moviePhotoAdapter.addItem(new MoviePhotoItem(url2));
+
+        recyclerView.addItemDecoration(new RecyclerViewDecoration(60));
+
+   //     Glide.with(getActivity().getApplicationContext()).load(url).into(imageView);
+
+        recyclerView.setAdapter(moviePhotoAdapter);
 
         Button button = (Button) rootView.findViewById(R.id.button_write);
         button.setOnClickListener(new View.OnClickListener() {

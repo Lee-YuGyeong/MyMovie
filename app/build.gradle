@@ -47,5 +47,7 @@ dependencies {
 
     debugImplementation 'com.amitshekhar.android:debug-db:1.0.6' // room
 
+    implementation 'androidx.recyclerview:recyclerview:1.1.0' //리사이클러뷰
+
 
 }
