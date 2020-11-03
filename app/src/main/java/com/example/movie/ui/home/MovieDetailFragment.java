@@ -3,6 +3,7 @@ package com.example.movie.ui.home;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -96,6 +97,7 @@ public class MovieDetailFragment extends Fragment {
     String image;
     float intent_rating;
     int totalCount;
+    String photoUrl;
 
     RecyclerView recyclerView;
     MoviePhotoAdapter moviePhotoAdapter;
@@ -122,7 +124,7 @@ public class MovieDetailFragment extends Fragment {
 
     }
 
-//https://www.youtube.com/watch?v=VJAPZ9cIbs0&feature=youtu.be
+    //https://www.youtube.com/watch?v=VJAPZ9cIbs0&feature=youtu.be
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -149,21 +151,9 @@ public class MovieDetailFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
 
         moviePhotoAdapter = new MoviePhotoAdapter(getContext());
-//
-//        moviePhotoAdapter.addItem(new MoviePhotoItem(R.drawable.image22));
-//        moviePhotoAdapter.addItem(new MoviePhotoItem(R.drawable.image22));
-//        moviePhotoAdapter.addItem(new MoviePhotoItem(R.drawable.image33));
 
-
-        String url2 = "http://movie.phinf.naver.net/20171010_164/1507615090097Sml1w_JPEG/movie_image.jpg?type=m665_443_2";
-        moviePhotoAdapter.addItem(new MoviePhotoItem(url2));
-        moviePhotoAdapter.addItem(new MoviePhotoItem(url2));
-        moviePhotoAdapter.addItem(new MoviePhotoItem(url2));
 
         recyclerView.addItemDecoration(new RecyclerViewDecoration(60));
-
-   //     Glide.with(getActivity().getApplicationContext()).load(url).into(imageView);
-
         recyclerView.setAdapter(moviePhotoAdapter);
 
         Button button = (Button) rootView.findViewById(R.id.button_write);
@@ -374,6 +364,25 @@ public class MovieDetailFragment extends Fragment {
             intent_title = movieList.result.get(0).title.toString();
             intent_rating = movieList.result.get(0).audience_rating;
 
+            photoUrl = movieList.result.get(0).photos;
+            adapterAddUrl();
+
+        }
+    }
+
+    public void adapterAddUrl() {
+        String str = photoUrl;
+
+        if (str != null) {
+            while (true) {
+                String result = str.substring(str.lastIndexOf(",") + 1);
+
+                moviePhotoAdapter.addItem(new MoviePhotoItem(result));
+
+                if ((str.length() - result.length() - 1) <= 0) break;
+                str = str.substring(0, str.length() - result.length() - 1);
+
+            }
         }
     }
 ///////////////////////////////////////api 끝
@@ -549,20 +558,21 @@ public class MovieDetailFragment extends Fragment {
 
 
     }
-    public void setCommentDatabaseData(){
+
+    public void setCommentDatabaseData() {
 
 
         CommentList = new ArrayList<CommentVo>();
 
         CommentList = CommentDatabase.selectCommentList(Integer.parseInt(key));
 
-        for(int i=0;i<CommentList.size();i++){
+        for (int i = 0; i < CommentList.size(); i++) {
             adapter.addItem(new CommentItem(R.drawable.user1, CommentList.get(i).getWriter(), CommentList.get(i).getTime(), CommentList.get(i).getContents(), CommentList.get(i).getRating()));
             arrayList.add(new CommentItem(R.drawable.user1, CommentList.get(i).getWriter(), CommentList.get(i).getTime(), CommentList.get(i).getContents(), CommentList.get(i).getRating()));
         }
         adapter.notifyDataSetChanged();
 
-        totalCount =  CommentList.get(CommentList.size()-1).getTotalCount();
+        totalCount = CommentList.get(CommentList.size() - 1).getTotalCount();
 
     }
 

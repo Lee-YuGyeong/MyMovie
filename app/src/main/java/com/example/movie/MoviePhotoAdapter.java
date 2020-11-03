@@ -77,8 +77,9 @@ public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.Vi
 
         public void setItem(MoviePhotoItem item) {
          //   imageView.setImageResource(item.getImage());
-            String url = "http://movie.phinf.naver.net/20171010_164/1507615090097Sml1w_JPEG/movie_image.jpg?type=m665_443_2";
-            Glide.with(context.getApplicationContext()).load(url).into(imageView);
+          //  String url = "http://movie.phinf.naver.net/20171010_164/1507615090097Sml1w_JPEG/movie_image.jpg?type=m665_443_2";
+          //  url = item.getImage();
+            Glide.with(context.getApplicationContext()).load(item.getImage()).into(imageView);
         }
 
     }
