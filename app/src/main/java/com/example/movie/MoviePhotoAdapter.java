@@ -32,7 +32,7 @@ public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.Vi
         public void OnItemClick(ViewHolder holder, View view, int position);
     }
 
-    public MoviePhotoAdapter(Context context){
+    public MoviePhotoAdapter(Context context) {
         this.context = context;
     }
 
@@ -45,8 +45,8 @@ public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.Vi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-     //   View itemView = inflater.inflate(R.layout.moviephoto_item,parent,false); //화면 꽉차게
-        View itemView = inflater.inflate(R.layout.moviephoto_item,null,false);
+        //   View itemView = inflater.inflate(R.layout.moviephoto_item,parent,false); //화면 꽉차게
+        View itemView = inflater.inflate(R.layout.moviephoto_item, null, false);
 
         return new ViewHolder(itemView);
     }
@@ -67,7 +67,7 @@ public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.Vi
         this.items = items;
     }
 
-    public MoviePhotoItem getItem(int position){
+    public MoviePhotoItem getItem(int position) {
         return items.get(position);
     }
 
@@ -81,6 +81,8 @@ public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
+        ImageView playImageView;
+        boolean video;
 
         OnItemClickListener listener;
 
@@ -88,6 +90,7 @@ public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.Vi
             super(itemView);
 
             imageView = (ImageView) itemView.findViewById(R.id.imageView);
+            playImageView = (ImageView) itemView.findViewById(R.id.playImageView);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -103,6 +106,12 @@ public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.Vi
 
         public void setItem(MoviePhotoItem item) {
             Glide.with(context.getApplicationContext()).load(item.getImage()).into(imageView);
+
+            if(!item.isVideo()) {
+                playImageView.setVisibility(View.INVISIBLE);
+            }else {
+                playImageView.setVisibility(View.VISIBLE);
+            }
         }
 
         public void setOnItemClickListener(OnItemClickListener listener) {
@@ -111,8 +120,6 @@ public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.Vi
 
 
     }
-
-
 
 
 }

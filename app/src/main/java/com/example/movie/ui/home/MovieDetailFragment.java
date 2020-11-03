@@ -2,6 +2,7 @@ package com.example.movie.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -101,7 +102,11 @@ public class MovieDetailFragment extends Fragment {
     float intent_rating;
     int totalCount;
     String photoUrl;
-    String photoUrlArr[];
+    String videoUrl;
+    String UrlArr[];
+    int photoUrlCount;
+    int videoUrlCount;
+
 
     RecyclerView recyclerView;
     MoviePhotoAdapter moviePhotoAdapter;
@@ -165,11 +170,18 @@ public class MovieDetailFragment extends Fragment {
             public void OnItemClick(MoviePhotoAdapter.ViewHolder holder, View view, int position) {
                 MoviePhotoItem item = moviePhotoAdapter.getItem(position);
 
-                Intent intent = new Intent(getContext(), ClickPhotoActivity.class);
 
-                intent.putExtra("url",photoUrlArr[position]);
+                if (position < photoUrlCount) {
+                    Intent intent = new Intent(getContext(), ClickPhotoActivity.class);
 
-                startActivity(intent);
+                    intent.putExtra("url", UrlArr[position]);
+                    startActivity(intent);
+                } else {
+                    Intent youtubeIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(UrlArr[position]));
+                    startActivity(youtubeIntent);
+                }
+
+
             }
         });
 
@@ -383,6 +395,8 @@ public class MovieDetailFragment extends Fragment {
             intent_rating = movieList.result.get(0).audience_rating;
 
             photoUrl = movieList.result.get(0).photos;
+            videoUrl = movieList.result.get(0).videos;
+
             adapterAddUrl();
 
         }
@@ -390,14 +404,59 @@ public class MovieDetailFragment extends Fragment {
 
     public void adapterAddUrl() {
         String str = photoUrl;
+        String str2 = videoUrl;
 
-        if (str != null) {
+        if (str != null && str2 != null) {
             StringTokenizer result = new StringTokenizer(str, ",");
-            photoUrlArr = new String[result.countTokens()];
+            StringTokenizer result2 = new StringTokenizer(str2, ",");
+
+            photoUrlCount = result.countTokens();
+            videoUrlCount = result2.countTokens();
+
+            UrlArr = new String[photoUrlCount + videoUrlCount];
+
             int i = 0;
+
             while (result.hasMoreTokens()) {
-                photoUrlArr[i] = result.nextToken();
-                moviePhotoAdapter.addItem(new MoviePhotoItem(photoUrlArr[i]));
+                UrlArr[i] = result.nextToken();
+                moviePhotoAdapter.addItem(new MoviePhotoItem(UrlArr[i],false));
+                i++;
+            }
+            while (result2.hasMoreTokens()) {
+                UrlArr[i] = result2.nextToken();
+                String thumb = UrlArr[i].substring(UrlArr[i].lastIndexOf("/") + 1);
+                thumb = "https://img.youtube.com/vi/" + thumb + "/default.jpg";
+                moviePhotoAdapter.addItem(new MoviePhotoItem(thumb,true));
+                i++;
+            }
+        } else if (str != null && str2 == null) {
+            StringTokenizer result = new StringTokenizer(str, ",");
+            photoUrlCount = result.countTokens();
+
+            UrlArr = new String[photoUrlCount];
+
+            int i = 0;
+
+            while (result.hasMoreTokens()) {
+                UrlArr[i] = result.nextToken();
+                moviePhotoAdapter.addItem(new MoviePhotoItem(UrlArr[i],false));
+                i++;
+            }
+
+        } else if (str == null && str2 != null) {
+            StringTokenizer result2 = new StringTokenizer(str2, ",");
+
+            videoUrlCount = result2.countTokens();
+
+            UrlArr = new String[photoUrlCount + videoUrlCount];
+
+            int i = 0;
+
+            while (result2.hasMoreTokens()) {
+                UrlArr[i] = result2.nextToken();
+                String thumb = UrlArr[i].substring(UrlArr[i].lastIndexOf("/") + 1);
+                thumb = "https://img.youtube.com/vi/" + thumb + "/default.jpg";
+                moviePhotoAdapter.addItem(new MoviePhotoItem(thumb,true));
                 i++;
             }
         }

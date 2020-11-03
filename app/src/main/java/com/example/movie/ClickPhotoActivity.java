@@ -3,7 +3,9 @@ package com.example.movie;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -28,4 +30,5 @@ public class ClickPhotoActivity extends AppCompatActivity {
 
 
     }
+
 }
