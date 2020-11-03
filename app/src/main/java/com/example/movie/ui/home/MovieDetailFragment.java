@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -26,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
 import com.example.movie.AppHelper;
+import com.example.movie.ClickPhotoActivity;
 import com.example.movie.CommentListActivity;
 import com.example.movie.CommentWrite;
 import com.example.movie.MainActivity;
@@ -48,6 +50,7 @@ import org.w3c.dom.Comment;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class MovieDetailFragment extends Fragment {
 
@@ -98,6 +101,7 @@ public class MovieDetailFragment extends Fragment {
     float intent_rating;
     int totalCount;
     String photoUrl;
+    String photoUrlArr[];
 
     RecyclerView recyclerView;
     MoviePhotoAdapter moviePhotoAdapter;
@@ -146,15 +150,29 @@ public class MovieDetailFragment extends Fragment {
         textView_director = (TextView) rootView.findViewById(R.id.textView_director);
         textView_actor = (TextView) rootView.findViewById(R.id.textView_actor);
 
+
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
         moviePhotoAdapter = new MoviePhotoAdapter(getContext());
 
-
         recyclerView.addItemDecoration(new RecyclerViewDecoration(60));
         recyclerView.setAdapter(moviePhotoAdapter);
+
+        moviePhotoAdapter.setOnItemClickListener(new MoviePhotoAdapter.OnItemClickListener() {
+            @Override
+            public void OnItemClick(MoviePhotoAdapter.ViewHolder holder, View view, int position) {
+                MoviePhotoItem item = moviePhotoAdapter.getItem(position);
+
+                Intent intent = new Intent(getContext(), ClickPhotoActivity.class);
+
+                intent.putExtra("url",photoUrlArr[position]);
+
+                startActivity(intent);
+            }
+        });
+
 
         Button button = (Button) rootView.findViewById(R.id.button_write);
         button.setOnClickListener(new View.OnClickListener() {
@@ -374,16 +392,17 @@ public class MovieDetailFragment extends Fragment {
         String str = photoUrl;
 
         if (str != null) {
-            while (true) {
-                String result = str.substring(str.lastIndexOf(",") + 1);
-
-                moviePhotoAdapter.addItem(new MoviePhotoItem(result));
-
-                if ((str.length() - result.length() - 1) <= 0) break;
-                str = str.substring(0, str.length() - result.length() - 1);
-
+            StringTokenizer result = new StringTokenizer(str, ",");
+            photoUrlArr = new String[result.countTokens()];
+            int i = 0;
+            while (result.hasMoreTokens()) {
+                photoUrlArr[i] = result.nextToken();
+                moviePhotoAdapter.addItem(new MoviePhotoItem(photoUrlArr[i]));
+                i++;
             }
         }
+
+
     }
 ///////////////////////////////////////api 끝
 

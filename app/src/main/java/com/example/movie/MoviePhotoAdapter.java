@@ -8,6 +8,7 @@ import android.media.MediaRecorder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -21,11 +22,15 @@ import java.util.ArrayList;
 
 public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.ViewHolder> {
 
- //   Context context;
-
     ArrayList<MoviePhotoItem> items = new ArrayList<MoviePhotoItem>();
 
     private static Context context;
+
+    OnItemClickListener listener;
+
+    public static interface OnItemClickListener {
+        public void OnItemClick(ViewHolder holder, View view, int position);
+    }
 
     public MoviePhotoAdapter(Context context){
         this.context = context;
@@ -50,6 +55,8 @@ public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.Vi
     public void onBindViewHolder(@NonNull MoviePhotoAdapter.ViewHolder holder, int position) {
         MoviePhotoItem item = items.get(position);
         holder.setItem(item);
+
+        holder.setOnItemClickListener(listener);
     }
 
     public void addItem(MoviePhotoItem item) {
@@ -65,22 +72,43 @@ public class MoviePhotoAdapter extends RecyclerView.Adapter<MoviePhotoAdapter.Vi
     }
 
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+
+    }//클릭 이벤트
+
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageView;
+
+        OnItemClickListener listener;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             imageView = (ImageView) itemView.findViewById(R.id.imageView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+
+                    if (listener != null) {
+                        listener.OnItemClick(ViewHolder.this, v, position);
+                    }
+                }
+            });
         }
 
         public void setItem(MoviePhotoItem item) {
-         //   imageView.setImageResource(item.getImage());
-          //  String url = "http://movie.phinf.naver.net/20171010_164/1507615090097Sml1w_JPEG/movie_image.jpg?type=m665_443_2";
-          //  url = item.getImage();
             Glide.with(context.getApplicationContext()).load(item.getImage()).into(imageView);
         }
+
+        public void setOnItemClickListener(OnItemClickListener listener) {
+            this.listener = listener;
+        }
+
 
     }
 
