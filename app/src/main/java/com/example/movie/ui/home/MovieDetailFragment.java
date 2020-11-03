@@ -635,6 +635,13 @@ public class MovieDetailFragment extends Fragment {
         intent_rating = list.get(i).getAudience_rating();
 
 
+        photoUrl = list.get(i).getPhotos();
+        videoUrl = list.get(i).getVideos();
+
+        adapterAddUrl();
+
+
+
     }
 
     public void setCommentDatabaseData() {
