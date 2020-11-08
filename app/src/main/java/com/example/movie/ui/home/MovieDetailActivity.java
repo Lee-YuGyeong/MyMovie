@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -38,6 +39,8 @@ import com.google.gson.Gson;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class MovieDetailActivity extends AppCompatActivity {
@@ -210,11 +213,14 @@ public class MovieDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (likeState) {
                     decrLikeCount();
+
                 } else {
                     incrLikeCount();
+
                     if (dislikeState) {
                         decrDislikeCount();
                         dislikeState = !dislikeState;
+
                     }
                 }
                 likeState = !likeState;
@@ -226,14 +232,16 @@ public class MovieDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (dislikeState) {
-
                     decrDislikeCount();
+
                 } else {
                     if (likeState) {
                         decrLikeCount();
                         likeState = !likeState;
+
                     }
                     incrDislikeCount();
+
                 }
                 dislikeState = !dislikeState;
             }
@@ -246,7 +254,85 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
 
+    public void incrLikeCount() {
+        likeCount += 1;
+        likeCountView.setText(String.valueOf(likeCount));
+
+        likeButton.setBackgroundResource(R.drawable.ic_thumb_up_selected);
+
+        postRequest("Y","null");
+    }
+
+    public void decrLikeCount() {
+        likeCount -= 1;
+        likeCountView.setText(String.valueOf(likeCount));
+
+        likeButton.setBackgroundResource(R.drawable.ic_thumb_up);
+
+        postRequest("N","null");
+    }
+
+    public void incrDislikeCount() {
+        dislikeCount += 1;
+        dislikeCountView.setText(String.valueOf(dislikeCount));
+
+        dislikeButton.setBackgroundResource(R.drawable.ic_thumb_down_selected);
+
+        postRequest("null","Y");
+    }
+
+    public void decrDislikeCount() {
+        dislikeCount -= 1;
+        dislikeCountView.setText(String.valueOf(dislikeCount));
+
+        dislikeButton.setBackgroundResource(R.drawable.ic_thumb_down);
+
+        postRequest("null","N");
+    }
+
+
     ///////////////////////////////////////////////////api 시작
+
+    public void postRequest(final String like,final String dislike) {
+
+        String url = "http://boostcourse-appapi.connect.or.kr:10000/movie/increaseLikeDisLike";
+
+        StringRequest request = new StringRequest(
+                Request.Method.POST,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                Map<String, String> params = new HashMap<String, String>();
+
+                params.put("id", key);
+
+                if(like != "null") {
+                    params.put("likeyn", like);
+                }
+                if(dislike != "null") {
+                    params.put("dislikeyn", dislike);
+                }
+                return params;
+            }
+        };
+        request.setShouldCache(false);
+        AppHelper.requestQueue.add(request);
+
+
+    }
+
 
     public void requestCommentList() {
 
@@ -490,39 +576,6 @@ public class MovieDetailActivity extends AppCompatActivity {
             return view;
         }
     }
-
-    public void incrLikeCount() {
-        likeCount += 1;
-        likeCountView.setText(String.valueOf(likeCount));
-
-        likeButton.setBackgroundResource(R.drawable.ic_thumb_up_selected);
-    }
-
-    public void decrLikeCount() {
-        likeCount -= 1;
-        likeCountView.setText(String.valueOf(likeCount));
-
-        likeButton.setBackgroundResource(R.drawable.ic_thumb_up);
-
-
-    }
-
-    public void incrDislikeCount() {
-        dislikeCount += 1;
-        dislikeCountView.setText(String.valueOf(dislikeCount));
-
-        dislikeButton.setBackgroundResource(R.drawable.ic_thumb_down_selected);
-
-    }
-
-    public void decrDislikeCount() {
-        dislikeCount -= 1;
-        dislikeCountView.setText(String.valueOf(dislikeCount));
-
-        dislikeButton.setBackgroundResource(R.drawable.ic_thumb_down);
-
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
