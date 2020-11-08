@@ -1,35 +1,25 @@
 package com.example.movie.ui.home;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.ViewPager;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.movie.AppHelper;
-import com.example.movie.CommentListActivity;
 import com.example.movie.MainActivity;
 import com.example.movie.R;
-import com.example.movie.data.MovieInfo;
-import com.example.movie.data.MovieList;
-import com.example.movie.data.ResponseInfo;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -37,14 +27,18 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
 
-    String[] movieTitle;
-
     MoviePagerAdapter adapter;
 
-    Fragment_home_1 fragment_home_1;
     ViewPager pager;
 
     MainActivity activity;
+
+    Animation translateUp;
+    Animation translateDown;
+
+    View menuContainer;
+
+    boolean isShown = false;
 
 
     @Override
@@ -72,6 +66,53 @@ public class HomeFragment extends Fragment {
         pager.setOffscreenPageLimit(6);
 
         adapter = new MoviePagerAdapter(getChildFragmentManager());
+/////////////////////////////////////////////
+//        Button button = (Button) root.findViewById(R.id.button);
+//        button.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Toast.makeText(getContext(), "버튼 클릭", Toast.LENGTH_LONG).show();
+//            }
+//        });
+
+        translateUp = AnimationUtils.loadAnimation(getContext(), R.anim.translate_up);
+        translateDown = AnimationUtils.loadAnimation(getContext(), R.anim.translate_down);
+
+        translateUp.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                menuContainer.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+
+        menuContainer = root.findViewById(R.id.menuContainer);
+        Button button = (Button) root.findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isShown) {
+                    menuContainer.startAnimation(translateUp);
+                }else{
+                    menuContainer.setVisibility(View.VISIBLE);
+                    menuContainer.startAnimation(translateDown);
+                }
+
+                isShown = !isShown;
+
+            }
+        });
+
+        ///////////////////////////////////////////////////////////////
 
 
         Fragment_home_1 fragment_home_1 = new Fragment_home_1();

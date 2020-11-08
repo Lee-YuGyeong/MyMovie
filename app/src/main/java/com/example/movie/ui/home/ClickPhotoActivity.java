@@ -1,4 +1,4 @@
-package com.example.movie;
+package com.example.movie.ui.home;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.example.movie.R;
 import com.github.chrisbanes.photoview.PhotoView;
 
 public class ClickPhotoActivity extends AppCompatActivity {

@@ -15,13 +15,12 @@ import com.example.movie.data.ResponseInfo;
 import com.example.movie.database.CommentDatabase;
 import com.example.movie.database.MovieDetailDatabase;
 import com.example.movie.database.OutlineDatabase;
+import com.example.movie.ui.home.CommentWrite;
 import com.example.movie.ui.home.Fragment_home_1;
 import com.example.movie.ui.home.Fragment_home_2;
-import com.example.movie.ui.home.MovieDetailFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;
@@ -46,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
 
     Fragment_home_1 fragment_home_1;
     Fragment_home_2 fragment_home_2;
-    MovieDetailFragment movieDetailFragment;
     CommentWrite commentWrite;
 
     @Override
@@ -63,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
         fragment_home_1 = new Fragment_home_1();
         fragment_home_2 = new Fragment_home_2();
-        movieDetailFragment = new MovieDetailFragment();
         commentWrite = new CommentWrite();
 
         database();
@@ -82,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
+
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow,
                 R.id.nav_tools, R.id.nav_share, R.id.nav_send)
@@ -97,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
 
     public void requestMovieList() {
 
@@ -162,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void requestMovieDetailList(int i) {
 
-        // http://boostcourse-appapi.connect.or.kr:10000/movie/readMovie?id=1
 
         String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readMovie";
         url += "?" + "id=" + String.valueOf(i);
@@ -283,7 +281,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -296,17 +293,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.container);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
-    }
-
-    public void onFragmentChanged(int index, String key) {
-        if (index == 0) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, movieDetailFragment).addToBackStack(null).commit();
-
-            Bundle bundle = new Bundle();
-            bundle.putString("key", key);
-            movieDetailFragment.setArguments(bundle);
-
-        }
     }
 
     public void networkStatus() {

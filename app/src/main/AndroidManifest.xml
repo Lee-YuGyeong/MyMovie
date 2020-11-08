@@ -13,10 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ClickPhotoActivity"></activity>
-        <activity android:name=".CommentListActivity" />
-        <activity android:name=".CommentWrite" />
-        <activity android:name=".SplashActivity"
+        <activity android:name=".ui.home.ClickPhotoActivity"></activity>
+        <activity android:name=".ui.home.CommentListActivity" />
+        <activity android:name=".ui.home.CommentWrite" />
+        <activity android:name=".ui.home.MovieDetailActivity"></activity>
+        <activity android:name=".splash.SplashActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

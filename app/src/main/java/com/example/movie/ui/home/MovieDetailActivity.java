@@ -1,11 +1,8 @@
 package com.example.movie.ui.home;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -16,9 +13,8 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,32 +24,23 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
 import com.example.movie.AppHelper;
-import com.example.movie.ClickPhotoActivity;
-import com.example.movie.CommentListActivity;
-import com.example.movie.CommentWrite;
-import com.example.movie.MainActivity;
-import com.example.movie.MoviePhotoAdapter;
-import com.example.movie.MoviePhotoItem;
-import com.example.movie.database.CommentDatabase;
-import com.example.movie.database.CommentVo;
-import com.example.movie.database.MovieDetailDatabase;
-import com.example.movie.database.MovieDetailVo;
 import com.example.movie.NetworkStatus;
 import com.example.movie.R;
 import com.example.movie.data.CommentList;
 import com.example.movie.data.MovieList;
 import com.example.movie.data.ResponseInfo;
-import com.example.movie.ui.RecyclerViewDecoration;
+import com.example.movie.database.CommentDatabase;
+import com.example.movie.database.CommentVo;
+import com.example.movie.database.MovieDetailDatabase;
+import com.example.movie.database.MovieDetailVo;
 import com.google.gson.Gson;
-
-import org.w3c.dom.Comment;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
-public class MovieDetailFragment extends Fragment {
+public class MovieDetailActivity extends AppCompatActivity {
 
     ArrayList<MovieDetailVo> list;
     ArrayList<CommentVo> CommentList;
@@ -75,12 +62,6 @@ public class MovieDetailFragment extends Fragment {
 
     ArrayList<CommentItem> arrayList;
     ArrayList<CommentItem> arrayList2;
-
-    MainActivity activity;
-    CommentWrite commentWriteActivity;
-
-    String contents;
-    Float rating;
 
     ImageView imageView;
     TextView textView_title;
@@ -118,49 +99,32 @@ public class MovieDetailFragment extends Fragment {
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        activity = (MainActivity) getActivity();
-
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-        activity = null;
-
-    }
-
-    //https://www.youtube.com/watch?v=VJAPZ9cIbs0&feature=youtu.be
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-        ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_movie_datail, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_movie_datail);
 
 
-        key = getArguments().getString("key");
+        final Intent intent = getIntent();
+        key = intent.getStringExtra("key");
 
-        imageView = (ImageView) rootView.findViewById(R.id.imageView);
-        imageView_grade = (ImageView) rootView.findViewById(R.id.imageView_grade);
-        textView_title = (TextView) rootView.findViewById(R.id.textView_title);
-        textView_titleDetail = (TextView) rootView.findViewById(R.id.textView_titleDetail);
-        textView_rank = (TextView) rootView.findViewById(R.id.textView_rank);
-        textView_score = (TextView) rootView.findViewById(R.id.textView_score);
-        ratingBar = (RatingBar) rootView.findViewById(R.id.ratingbar);
-        textView_audience = (TextView) rootView.findViewById(R.id.textView_audience);
-        textView_text = (TextView) rootView.findViewById(R.id.textView_text);
-        textView_director = (TextView) rootView.findViewById(R.id.textView_director);
-        textView_actor = (TextView) rootView.findViewById(R.id.textView_actor);
+        imageView = (ImageView) findViewById(R.id.imageView);
+        imageView_grade = (ImageView) findViewById(R.id.imageView_grade);
+        textView_title = (TextView) findViewById(R.id.textView_title);
+        textView_titleDetail = (TextView) findViewById(R.id.textView_titleDetail);
+        textView_rank = (TextView) findViewById(R.id.textView_rank);
+        textView_score = (TextView) findViewById(R.id.textView_score);
+        ratingBar = (RatingBar) findViewById(R.id.ratingbar);
+        textView_audience = (TextView) findViewById(R.id.textView_audience);
+        textView_text = (TextView) findViewById(R.id.textView_text);
+        textView_director = (TextView) findViewById(R.id.textView_director);
+        textView_actor = (TextView) findViewById(R.id.textView_actor);
 
 
-        recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
 
-        moviePhotoAdapter = new MoviePhotoAdapter(getContext());
+        moviePhotoAdapter = new MoviePhotoAdapter(getApplicationContext());
 
         recyclerView.addItemDecoration(new RecyclerViewDecoration(60));
         recyclerView.setAdapter(moviePhotoAdapter);
@@ -172,7 +136,7 @@ public class MovieDetailFragment extends Fragment {
 
 
                 if (position < photoUrlCount) {
-                    Intent intent = new Intent(getContext(), ClickPhotoActivity.class);
+                    Intent intent = new Intent(getApplicationContext(), ClickPhotoActivity.class);
 
                     intent.putExtra("url", UrlArr[position]);
                     startActivity(intent);
@@ -186,32 +150,36 @@ public class MovieDetailFragment extends Fragment {
         });
 
 
-        Button button = (Button) rootView.findViewById(R.id.button_write);
+        Button button = (Button) findViewById(R.id.button_write);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int status = NetworkStatus.getConnectivityStatus(getApplicationContext());
+                if(status == NetworkStatus.TYPE_NOT_CONNECTED) {
+                    Toast.makeText(getApplicationContext(),"인터넷을 연결해 주세요.",Toast.LENGTH_LONG).show();
+                }else {
 
-                Intent intent = new Intent(getContext(), CommentWrite.class);
+                    Intent intent = new Intent(getApplicationContext(), CommentWrite.class);
 
-                intent.putExtra("title", intent_title);
-                intent.putExtra("resID", resID);
+                    intent.putExtra("key", key);
+                    intent.putExtra("title", intent_title);
+                    intent.putExtra("resID", resID);
 
-                startActivityForResult(intent, 101);
-
+                    startActivityForResult(intent, 101);
+                }
             }
         });
 
 
-        Button lookButton = (Button) rootView.findViewById(R.id.lookButton);
+        Button lookButton = (Button) findViewById(R.id.lookButton);
 
         arrayList = new ArrayList<CommentItem>();
         arrayList2 = new ArrayList<CommentItem>();
 
 
-        listView = (ListView) rootView.findViewById(R.id.listView);
+        listView = (ListView) findViewById(R.id.listView);
 
         adapter = new CommentAdapter();
-        //   adapter.addItem(new CommentItem(R.drawable.user1, "kym71**", "10분전", "적당히 재밌다.오랜만에 잠 안오는 영화 봤네요.", 2.0f));
 
         listView.setAdapter(adapter);
 
@@ -220,10 +188,10 @@ public class MovieDetailFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getContext(), CommentListActivity.class);
+                Intent intent = new Intent(getApplicationContext(), CommentListActivity.class);
 
                 intent.putParcelableArrayListExtra("arr", arrayList);
-                //   intent.putExtra("key", key);
+                intent.putExtra("key", key);
                 intent.putExtra("title", intent_title);
                 intent.putExtra("resID", resID);
                 intent.putExtra("rating", intent_rating);
@@ -236,7 +204,7 @@ public class MovieDetailFragment extends Fragment {
             }
         });
 
-        likeButton = (Button) rootView.findViewById(R.id.likeButton);
+        likeButton = (Button) findViewById(R.id.likeButton);
         likeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -253,7 +221,7 @@ public class MovieDetailFragment extends Fragment {
             }
         });
 
-        dislikeButton = (Button) rootView.findViewById(R.id.dislikeButton);
+        dislikeButton = (Button) findViewById(R.id.dislikeButton);
         dislikeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -271,23 +239,19 @@ public class MovieDetailFragment extends Fragment {
             }
         });
 
-        likeCountView = (TextView) rootView.findViewById(R.id.likeCountView);
-        dislikeCountView = (TextView) rootView.findViewById(R.id.dislikeView);
+        likeCountView = (TextView) findViewById(R.id.likeCountView);
+        dislikeCountView = (TextView) findViewById(R.id.dislikeView);
 
 
-        return rootView;
     }
 
 
     ///////////////////////////////////////////////////api 시작
 
     public void requestCommentList() {
-        //  String key = getArguments().getString("key");
-        //http://boostcourse-appapi.connect.or.kr:10000/movie/readCommentList?id=1
 
         String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readCommentList";
         url += "?" + "id=" + key;
-
 
         StringRequest request = new StringRequest(
                 Request.Method.GET,
@@ -319,11 +283,13 @@ public class MovieDetailFragment extends Fragment {
 
             totalCount = info.totalCount;
 
+            adapter.items.clear();
+
             if (adapter.isEmpty()) {
+
                 for (int i = 0; i < commentList.result.size(); i++) {
 
                     adapter.addItem(new CommentItem(R.drawable.user1, commentList.result.get(i).writer, commentList.result.get(i).time, commentList.result.get(i).contents, commentList.result.get(i).rating));
-                    arrayList.add(new CommentItem(R.drawable.user1, commentList.result.get(i).writer, commentList.result.get(i).time, commentList.result.get(i).contents, commentList.result.get(i).rating));
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -332,9 +298,6 @@ public class MovieDetailFragment extends Fragment {
     }
 
     public void requestMovieList() {
-
-        //http://boostcourse-appapi.connect.or.kr:10000/movie/readMovie?id=1//
-
 
         String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readMovie";
         url += "?" + "id=" + key;
@@ -367,11 +330,11 @@ public class MovieDetailFragment extends Fragment {
             MovieList movieList = gson.fromJson(response, MovieList.class);
 
             String url = movieList.result.get(0).thumb;
-            Glide.with(getActivity().getApplicationContext()).load(url).into(imageView);
+            Glide.with(getApplicationContext().getApplicationContext()).load(url).into(imageView);
 
             image = "@drawable/ic_";
             image += movieList.result.get(0).grade;
-            String packageName = getContext().getPackageName();
+            String packageName = getPackageName();
             resID = getResources().getIdentifier(image, "drawable", packageName);
             imageView_grade.setImageResource(resID);
 
@@ -419,14 +382,14 @@ public class MovieDetailFragment extends Fragment {
 
             while (result.hasMoreTokens()) {
                 UrlArr[i] = result.nextToken();
-                moviePhotoAdapter.addItem(new MoviePhotoItem(UrlArr[i],false));
+                moviePhotoAdapter.addItem(new MoviePhotoItem(UrlArr[i], false));
                 i++;
             }
             while (result2.hasMoreTokens()) {
                 UrlArr[i] = result2.nextToken();
                 String thumb = UrlArr[i].substring(UrlArr[i].lastIndexOf("/") + 1);
                 thumb = "https://img.youtube.com/vi/" + thumb + "/default.jpg";
-                moviePhotoAdapter.addItem(new MoviePhotoItem(thumb,true));
+                moviePhotoAdapter.addItem(new MoviePhotoItem(thumb, true));
                 i++;
             }
         } else if (str != null && str2 == null) {
@@ -439,7 +402,7 @@ public class MovieDetailFragment extends Fragment {
 
             while (result.hasMoreTokens()) {
                 UrlArr[i] = result.nextToken();
-                moviePhotoAdapter.addItem(new MoviePhotoItem(UrlArr[i],false));
+                moviePhotoAdapter.addItem(new MoviePhotoItem(UrlArr[i], false));
                 i++;
             }
 
@@ -456,13 +419,14 @@ public class MovieDetailFragment extends Fragment {
                 UrlArr[i] = result2.nextToken();
                 String thumb = UrlArr[i].substring(UrlArr[i].lastIndexOf("/") + 1);
                 thumb = "https://img.youtube.com/vi/" + thumb + "/default.jpg";
-                moviePhotoAdapter.addItem(new MoviePhotoItem(thumb,true));
+                moviePhotoAdapter.addItem(new MoviePhotoItem(thumb, true));
                 i++;
             }
         }
 
 
     }
+
 ///////////////////////////////////////api 끝
 
     public static String currentpoint(String result) {
@@ -511,7 +475,7 @@ public class MovieDetailFragment extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             CommentItemView view = null;
             if (convertView == null) {
-                view = new CommentItemView(getContext());
+                view = new CommentItemView(getApplicationContext());
             } else {
                 view = (CommentItemView) convertView;
             }
@@ -564,19 +528,10 @@ public class MovieDetailFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-
         if (requestCode == 101) {
             if (intent != null) {
 
-
-                String contents = intent.getStringExtra("contents");
-                float rating = intent.getFloatExtra("rating", 0.0f);
-
-                adapter.addItem(new CommentItem(R.drawable.user1, "lyg64**", "5분전", contents, rating));
-                adapter.notifyDataSetChanged();
-
-                arrayList.add(new CommentItem(R.drawable.user1, "lyg64**", "5분전", contents, rating));//
-
+                networkStatus();
 
             }
         }
@@ -586,7 +541,7 @@ public class MovieDetailFragment extends Fragment {
 
     /////////////db 시작
     public void networkStatus() {
-        int status = NetworkStatus.getConnectivityStatus(getContext());
+        int status = NetworkStatus.getConnectivityStatus(getApplicationContext());
         if (status == NetworkStatus.TYPE_MOBILE) {
             requestMovieList();
             requestCommentList();
@@ -608,11 +563,11 @@ public class MovieDetailFragment extends Fragment {
         int i = Integer.parseInt(key) - 1;
 
         String url = list.get(i).getThumb();
-        Glide.with(getActivity().getApplicationContext()).load(url).into(imageView);
+        Glide.with(getApplicationContext().getApplicationContext()).load(url).into(imageView);
 
         image = "@drawable/ic_";
         image += list.get(i).getGrade();
-        String packageName = getContext().getPackageName();
+        String packageName = getPackageName();
         resID = getResources().getIdentifier(image, "drawable", packageName);
         imageView_grade.setImageResource(resID);
 
@@ -641,11 +596,9 @@ public class MovieDetailFragment extends Fragment {
         adapterAddUrl();
 
 
-
     }
 
     public void setCommentDatabaseData() {
-
 
         CommentList = new ArrayList<CommentVo>();
 
@@ -653,7 +606,6 @@ public class MovieDetailFragment extends Fragment {
 
         for (int i = 0; i < CommentList.size(); i++) {
             adapter.addItem(new CommentItem(R.drawable.user1, CommentList.get(i).getWriter(), CommentList.get(i).getTime(), CommentList.get(i).getContents(), CommentList.get(i).getRating()));
-            arrayList.add(new CommentItem(R.drawable.user1, CommentList.get(i).getWriter(), CommentList.get(i).getTime(), CommentList.get(i).getContents(), CommentList.get(i).getRating()));
         }
         adapter.notifyDataSetChanged();
 
@@ -663,5 +615,6 @@ public class MovieDetailFragment extends Fragment {
 
 
     ////////////db 끝
+
 
 }

@@ -1,6 +1,7 @@
 package com.example.movie.ui.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,7 +77,10 @@ public class Fragment_home_4 extends Fragment {
             @Override
             public void onClick(View v) {
 
-                activity.onFragmentChanged(0,"4");
+              //  activity.onFragmentChanged(0,"4");
+                Intent intent = new Intent(getContext(), MovieDetailActivity.class);
+                intent.putExtra("key","4");
+                startActivity(intent);
             }
         });
 

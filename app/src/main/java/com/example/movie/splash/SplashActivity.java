@@ -1,4 +1,4 @@
-package com.example.movie;
+package com.example.movie.splash;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.os.Handler;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.movie.MainActivity;
 
 public class SplashActivity extends AppCompatActivity {
 

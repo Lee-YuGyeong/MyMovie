@@ -1,12 +1,10 @@
-package com.example.movie;
+package com.example.movie.ui.home;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -15,33 +13,35 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.bumptech.glide.Glide;
-import com.example.movie.data.MovieList;
+import com.example.movie.AppHelper;
+import com.example.movie.NetworkStatus;
+import com.example.movie.R;
+import com.example.movie.data.CommentList;
 import com.example.movie.data.ResponseInfo;
+import com.example.movie.database.CommentDatabase;
+import com.example.movie.database.CommentVo;
 import com.example.movie.ui.home.CommentItem;
 import com.example.movie.ui.home.CommentItemView;
-import com.example.movie.ui.home.MovieDetailFragment;
+import com.example.movie.ui.home.CommentWrite;
 import com.google.gson.Gson;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 
+
 public class CommentListActivity extends AppCompatActivity {
 
     CommentAdapter adapter;
     ListView listView;
     ArrayList<CommentItem> arrayList;
-    CommentItem list;
-    Intent intent;
-    MovieDetailFragment movieDetailFragment;
     ArrayList<CommentItem> arrayList2;
-//    String key;
 
     TextView textView_title;
     ImageView imageView_grade;
@@ -50,6 +50,16 @@ public class CommentListActivity extends AppCompatActivity {
 
     String intent_title;
     int resID;
+
+    String key;
+
+    ArrayList<CommentVo> CommentList;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkStatus();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,42 +79,88 @@ public class CommentListActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showCommentWriteActivity();
+                int status = NetworkStatus.getConnectivityStatus(getApplicationContext());
+                if (status == NetworkStatus.TYPE_NOT_CONNECTED) {
+                    Toast.makeText(getApplicationContext(), "인터넷을 연결해 주세요.", Toast.LENGTH_LONG).show();
+                } else {
+
+                    showCommentWriteActivity();
+                }
             }
         });
 
 
-//
         listView = (ListView) findViewById(R.id.listView);
-//
-//
+
         adapter = new CommentAdapter();
-
-        Intent intent = getIntent();
-
-        arrayList = intent.getParcelableArrayListExtra("arr");
-      //  key = intent.getStringExtra("key");
-
-
-        for (int i = 0; i < arrayList.size(); i++) {
-            adapter.addItem(new CommentItem(arrayList.get(i).getResId(), arrayList.get(i).getId(), arrayList.get(i).getTime(), arrayList.get(i).getComment(), arrayList.get(i).getRating())); //모두보기 데이터 넘겨주기
-        }
 
         listView.setAdapter(adapter);
 
+        Intent intent = getIntent();
+        key = intent.getStringExtra("key");
+
         intent_title = intent.getStringExtra("title").toString();
         textView_title.setText(intent_title);
-        resID = intent.getIntExtra("resID",0);
+        resID = intent.getIntExtra("resID", 0);
         imageView_grade.setImageResource(resID);
-        ratingBar.setRating(intent.getFloatExtra("rating",0f)/2);
+        ratingBar.setRating(intent.getFloatExtra("rating", 0f) / 2);
 
-        String totalCount = String.valueOf(intent.getIntExtra("totalCount",0));
+        String totalCount = String.valueOf(intent.getIntExtra("totalCount", 0));
 
-        textView_rating.setText((intent.getFloatExtra("rating",0f)) + "  (" +currentpoint(totalCount) + "명 참여)");
-
+        textView_rating.setText((intent.getFloatExtra("rating", 0f)) + "  (" + currentpoint(totalCount) + "명 참여)");
 
 
     }
+
+    public void requestCommentList() {
+
+        String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readCommentList";
+        url += "?" + "id=" + key;
+
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        processResponse2(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                }
+        );
+        request.setShouldCache(false);
+        AppHelper.requestQueue.add(request);
+
+    }
+
+    public void processResponse2(String response) {
+        Gson gson = new Gson();
+
+        ResponseInfo info = gson.fromJson(response, ResponseInfo.class);
+        if (info.code == 200) {
+
+            CommentList commentList = gson.fromJson(response, CommentList.class);
+
+            adapter.items.clear();
+
+            if (adapter.isEmpty()) {
+
+                for (int i = 0; i < commentList.result.size(); i++) {
+
+                    adapter.addItem(new CommentItem(R.drawable.user1, commentList.result.get(i).writer, commentList.result.get(i).time, commentList.result.get(i).contents, commentList.result.get(i).rating));
+
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+        }
+    }
+
 
     public static String currentpoint(String result) {
 
@@ -173,6 +229,7 @@ public class CommentListActivity extends AppCompatActivity {
 
         Intent intent = new Intent(getApplicationContext(), CommentWrite.class);
 
+        intent.putExtra("key", key);
         intent.putExtra("title", intent_title);
         intent.putExtra("resID", resID);
 
@@ -186,19 +243,34 @@ public class CommentListActivity extends AppCompatActivity {
 
         if (requestCode == 101) {
             if (intent != null) {
-                String contents = intent.getStringExtra("contents");
-                float rating = intent.getFloatExtra("rating", 0.0f);
-
-                adapter.addItem(new CommentItem(R.drawable.user1, "lyg64**", "5분전", contents, rating));
-
-                arrayList2.add(new CommentItem(R.drawable.user1, "lyg64**", "5분전", contents, rating));//////
-
-                adapter.notifyDataSetChanged();
-
-
+                networkStatus();
             }
         }
 
+    }
+
+    public void setCommentDatabaseData() {
+
+        CommentList = new ArrayList<CommentVo>();
+
+        CommentList = CommentDatabase.selectCommentList(Integer.parseInt(key));
+
+        for (int i = 0; i < CommentList.size(); i++) {
+            adapter.addItem(new CommentItem(R.drawable.user1, CommentList.get(i).getWriter(), CommentList.get(i).getTime(), CommentList.get(i).getContents(), CommentList.get(i).getRating()));
+        }
+        adapter.notifyDataSetChanged();
+
+    }
+
+    public void networkStatus() {
+        int status = NetworkStatus.getConnectivityStatus(getApplicationContext());
+        if (status == NetworkStatus.TYPE_MOBILE) {
+            requestCommentList();
+        } else if (status == NetworkStatus.TYPE_WIFI) {
+            requestCommentList();
+        } else {
+            setCommentDatabaseData();
+        }
     }
 
 

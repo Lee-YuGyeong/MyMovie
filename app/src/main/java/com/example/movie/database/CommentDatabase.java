@@ -30,11 +30,9 @@ public class CommentDatabase {
             ")";
 
     public static void openDatabase(Context context, String databaseName) {
-        println("openDatabase 호출됨");
         try {
             database = context.openOrCreateDatabase(databaseName, Context.MODE_PRIVATE, null);
             if (database != null) {
-                println("데이터베이스 " + databaseName + "오픈됨.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -42,15 +40,12 @@ public class CommentDatabase {
     }
 
     public static void createTable(String tableName) {
-        println("createTable 호출됨 : " + tableName);
 
         if (database != null) {
             if (tableName.equals("comment")) {
                 database.execSQL(createTableCommentSql);
-                println("comment 테이블 생성 요청됨.");
             }
         } else {
-            println("데이터베이스를 먼저 오픈하세요.");
         }
     }
 
@@ -65,8 +60,6 @@ public class CommentDatabase {
                                          int recommend,
                                          int totalCount) {
 
-        println("insertCommentData() 호출됨.");
-
         if (database != null) {
 
 
@@ -75,15 +68,11 @@ public class CommentDatabase {
 
             database.execSQL(sql, params);
 
-            println("데이터 추가함.");
-        } else {
-            println("먼저 데이터베이스를 오픈하세요.");
         }
-
     }
 
+
     public static ArrayList<CommentVo> selectCommentList(int key) {
-        println("selectData() 호출됨.");
         ArrayList<CommentVo> list = new ArrayList<CommentVo>();
 
         if (database != null) {
@@ -123,8 +112,5 @@ public class CommentDatabase {
     }
 
 
-    public static void println(String data) {
-        Log.d(TAG, data);
-    }
 
 }

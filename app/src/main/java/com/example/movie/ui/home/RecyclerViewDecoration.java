@@ -1,4 +1,4 @@
-package com.example.movie.ui;
+package com.example.movie.ui.home;
 
 import android.graphics.Rect;
 import android.view.View;

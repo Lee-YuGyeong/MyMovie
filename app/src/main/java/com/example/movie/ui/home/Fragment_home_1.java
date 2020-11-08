@@ -1,6 +1,7 @@
 package com.example.movie.ui.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -72,11 +74,17 @@ public class Fragment_home_1 extends Fragment {
         textView2 = (TextView) rootView.findViewById(R.id.textView2);
         imageView = (ImageView) rootView.findViewById(R.id.imageView);
 
+
+
+
         Button button = (Button) rootView.findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                activity.onFragmentChanged(0, "1");
+               // activity.onFragmentChanged(0, "1");
+                Intent intent = new Intent(getContext(), MovieDetailActivity.class);
+                intent.putExtra("key","1");
+                startActivity(intent);
             }
         });
 
@@ -86,7 +94,7 @@ public class Fragment_home_1 extends Fragment {
     public void requestMovieList() {
 
         String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readMovieList";
-        url += "?" + "type=1";
+        url += "?" + "type=2";
 
         StringRequest request = new StringRequest(
                 Request.Method.GET,
