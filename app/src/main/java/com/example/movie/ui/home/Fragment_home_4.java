@@ -21,6 +21,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.bumptech.glide.Glide;
 import com.example.movie.AppHelper;
+import com.example.movie.database.MovieDetailDatabase;
+import com.example.movie.database.MovieDetailVo;
 import com.example.movie.database.OutlineDatabase;
 import com.example.movie.MainActivity;
 import com.example.movie.database.MovieVo;
@@ -31,6 +33,8 @@ import com.example.movie.data.ResponseInfo;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class Fragment_home_4 extends Fragment {
 
@@ -40,13 +44,9 @@ public class Fragment_home_4 extends Fragment {
     ImageView imageView;
 
     MainActivity activity;
-    ArrayList<MovieVo> list;
+    ArrayList<MovieDetailVo> arrayList;
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        networkStatus();
-    }
+    int id;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -72,88 +72,79 @@ public class Fragment_home_4 extends Fragment {
         textView2 = (TextView) rootView.findViewById(R.id.textView2);
         imageView = (ImageView) rootView.findViewById(R.id.imageView);
 
+
+        arrayList = new ArrayList<MovieDetailVo>();
+
+        setDatabaseData();
+
+        textView.setText("4. " + arrayList.get(3).getTitle());
+        textView2.setText("예매율  " + arrayList.get(3).getReservation_rate() + "% | " + arrayList.get(3).getGrade() + "세 관람가 | " + arrayList.get(3).getDateValue() + " 개봉");
+
+        String url = arrayList.get(3).getImage();
+        Glide.with(getActivity()).load(url).into(imageView);
+
+        id = arrayList.get(3).getId();
+
+
         Button button = (Button) rootView.findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-              //  activity.onFragmentChanged(0,"4");
+                // activity.onFragmentChanged(0, "1");
                 Intent intent = new Intent(getContext(), MovieDetailActivity.class);
-                intent.putExtra("key","4");
+                intent.putExtra("key", String.valueOf(id));
                 startActivity(intent);
             }
         });
 
+
+
         return rootView;
     }
+    public void setDatabaseData() {
 
-    public void requestMovieList(){
+        String sort = getArguments().getString("sort");
+        sortingMovie(sort);
+    }
 
-        String url = "http://"+AppHelper.host + ":" + AppHelper.port + "/movie/readMovieList";
-        url += "?" + "type=1";
+    public void sortingMovie(String sort) {
 
-        StringRequest request = new StringRequest(
-                Request.Method.GET,
-                url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        processResponse(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
+        if (sort == "reservation_rate") {
+
+            arrayList = MovieDetailDatabase.selectDetailList();
+
+
+        } else if (sort == "audience_rating") {
+
+            arrayList = MovieDetailDatabase.selectDetailList();
+
+            Collections.sort(arrayList, new Comparator<MovieDetailVo>() {
+                @Override
+                public int compare(MovieDetailVo o1, MovieDetailVo o2) {
+                    if (o1.getAudience_rating() < o2.getAudience_rating()) {
+                        return -1;
+                    } else if (o1.getAudience_rating() == o2.getAudience_rating()) {
+                        return 0;
+                    } else {
+                        return 1;
                     }
                 }
-        );
-        request.setShouldCache(false);
-        AppHelper.requestQueue.add(request);
-    }
+            });
 
-    public void processResponse(String response){
-        Gson gson = new Gson();
-
-        ResponseInfo info = gson.fromJson(response, ResponseInfo.class);
-        if(info.code == 200) {
-
-            MovieList movieList = gson.fromJson(response,MovieList.class);
-
-            String url = movieList.result.get(3).image;
-
-            Glide.with(getActivity()).load(url).into(imageView);
-
-            textView.setText("4. " + movieList.result.get(3).title.toString());
-            textView2.setText("예매율  " + movieList.result.get(3).reservation_rate + "% | " + movieList.result.get(3).grade + "세 관람가 | " + movieList.result.get(3).date + " 개봉");
-
-        }
-    }
-
-
-    public void networkStatus() {
-        int status = NetworkStatus.getConnectivityStatus(getActivity());
-        if (status == NetworkStatus.TYPE_MOBILE) {
-            requestMovieList();
-        } else if (status == NetworkStatus.TYPE_WIFI) {
-            requestMovieList();
         } else {
-            setDatabaseData();
-            Toast.makeText(getActivity(),"인터넷이 연결되어 있지 않습니다. 데이터베이스로부터 로딩함.",Toast.LENGTH_LONG).show();
+
+            arrayList = MovieDetailDatabase.selectDetailList();
+
+            Collections.sort(arrayList, new Comparator<MovieDetailVo>() {
+                @Override
+                public int compare(MovieDetailVo o1, MovieDetailVo o2) {
+                    return o1.getDateValue().compareTo(o2.getDateValue());
+                }
+            });
+
         }
     }
 
-    public void setDatabaseData(){
-
-        list = new ArrayList<MovieVo>();
-        list = OutlineDatabase.selectOutlineList();
-
-        textView.setText("4. " + list.get(3).getTitle());
-        textView2.setText("예매율  " + list.get(3).getReservation_rate() + "% | " + list.get(3).getGrade() + "세 관람가 | " + list.get(3).getDateValue() + " 개봉");
-
-        String url = list.get(3).getImage();
-        Glide.with(getActivity()).load(url).into(imageView);
-
-    }
 
 
 }

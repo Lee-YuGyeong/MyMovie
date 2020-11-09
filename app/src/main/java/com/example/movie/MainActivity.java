@@ -21,6 +21,7 @@ import com.example.movie.ui.home.Fragment_home_2;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import android.util.Log;
 import android.view.View;
 
 import androidx.navigation.NavController;

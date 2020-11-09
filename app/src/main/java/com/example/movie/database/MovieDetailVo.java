@@ -225,4 +225,7 @@ public class MovieDetailVo {
     public void setDislike(int dislike) {
         this.dislike = dislike;
     }
+
 }
+
+
