@@ -19,13 +19,17 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.bumptech.glide.Glide;
 import com.example.movie.AppHelper;
 import com.example.movie.NetworkStatus;
 import com.example.movie.R;
 import com.example.movie.data.CommentList;
+import com.example.movie.data.MovieList;
 import com.example.movie.data.ResponseInfo;
 import com.example.movie.database.CommentDatabase;
 import com.example.movie.database.CommentVo;
+import com.example.movie.database.MovieDetailDatabase;
+import com.example.movie.database.MovieDetailVo;
 import com.example.movie.ui.home.CommentItem;
 import com.example.movie.ui.home.CommentItemView;
 import com.example.movie.ui.home.CommentWrite;
@@ -52,6 +56,7 @@ public class CommentListActivity extends AppCompatActivity {
     int resID;
 
     String key;
+    String totalCount;
 
     ArrayList<CommentVo> CommentList;
 
@@ -100,16 +105,54 @@ public class CommentListActivity extends AppCompatActivity {
         key = intent.getStringExtra("key");
 
         intent_title = intent.getStringExtra("title").toString();
-        textView_title.setText(intent_title);
         resID = intent.getIntExtra("resID", 0);
-        imageView_grade.setImageResource(resID);
-        ratingBar.setRating(intent.getFloatExtra("rating", 0f) / 2);
-
-        String totalCount = String.valueOf(intent.getIntExtra("totalCount", 0));
-
-        textView_rating.setText((intent.getFloatExtra("rating", 0f)) + "  (" + currentpoint(totalCount) + "명 참여)");
 
 
+    }
+    public void requestMovieList() {
+
+        String url = "http://" + AppHelper.host + ":" + AppHelper.port + "/movie/readMovie";
+        url += "?" + "id=" + key;
+
+        StringRequest request = new StringRequest(
+                Request.Method.GET,
+                url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        processResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                }
+        );
+        request.setShouldCache(false);
+        AppHelper.requestQueue.add(request);
+    }
+
+    public void processResponse(String response) {
+        Gson gson = new Gson();
+
+        ResponseInfo info = gson.fromJson(response, ResponseInfo.class);
+        if (info.code == 200) {
+
+            MovieList movieList = gson.fromJson(response, MovieList.class);
+
+            String image = "@drawable/ic_";
+            image += movieList.result.get(0).grade;
+            String packageName = getPackageName();
+            resID = getResources().getIdentifier(image, "drawable", packageName);
+            imageView_grade.setImageResource(resID);
+
+            textView_title.setText(movieList.result.get(0).title.toString());
+            ratingBar.setRating(movieList.result.get(0).audience_rating / 2);
+
+            textView_rating.setText(movieList.result.get(0).audience_rating + "  (" + currentpoint(totalCount) + "명 참여)");
+
+        }
     }
 
     public void requestCommentList() {
@@ -145,6 +188,10 @@ public class CommentListActivity extends AppCompatActivity {
         if (info.code == 200) {
 
             CommentList commentList = gson.fromJson(response, CommentList.class);
+
+            int totalCountInt = info.totalCount;
+            totalCount = String.valueOf(totalCountInt);
+
 
             adapter.items.clear();
 
@@ -255,18 +302,42 @@ public class CommentListActivity extends AppCompatActivity {
 
         CommentList = CommentDatabase.selectCommentList(Integer.parseInt(key));
 
-        for (int i = 0; i < CommentList.size(); i++) {
+
+        for (int i = CommentList.size()-1; i >CommentList.size()-10; i--) {
             adapter.addItem(new CommentItem(R.drawable.user1, CommentList.get(i).getWriter(), CommentList.get(i).getTime(), CommentList.get(i).getContents(), CommentList.get(i).getRating()));
         }
         adapter.notifyDataSetChanged();
+
+
+        ArrayList<MovieDetailVo> list;
+
+        list = MovieDetailDatabase.selectDetailList();
+
+        int i = Integer.parseInt(key) - 1;
+
+        String image = "@drawable/ic_";
+        image += list.get(i).getGrade();
+        String packageName = getPackageName();
+        resID = getResources().getIdentifier(image, "drawable", packageName);
+        imageView_grade.setImageResource(resID);
+
+        textView_title.setText(list.get(i).getTitle());
+        ratingBar.setRating(list.get(i).getAudience_rating() / 2);
+
+        int totalCountInt = CommentList.get(CommentList.size()-1).getTotalCount();
+        totalCount = String.valueOf(totalCountInt);
+
+        textView_rating.setText(list.get(i).getAudience_rating() + "  (" + currentpoint(totalCount) + "명 참여)");
 
     }
 
     public void networkStatus() {
         int status = NetworkStatus.getConnectivityStatus(getApplicationContext());
         if (status == NetworkStatus.TYPE_MOBILE) {
+            requestMovieList();
             requestCommentList();
         } else if (status == NetworkStatus.TYPE_WIFI) {
+            requestMovieList();
             requestCommentList();
         } else {
             setCommentDatabaseData();

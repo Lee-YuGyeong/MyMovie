@@ -657,7 +657,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         CommentList = CommentDatabase.selectCommentList(Integer.parseInt(key));
 
-        for (int i = 0; i < CommentList.size(); i++) {
+        for (int i = CommentList.size()-1; i >CommentList.size()-10; i--) {
             adapter.addItem(new CommentItem(R.drawable.user1, CommentList.get(i).getWriter(), CommentList.get(i).getTime(), CommentList.get(i).getContents(), CommentList.get(i).getRating()));
         }
         adapter.notifyDataSetChanged();

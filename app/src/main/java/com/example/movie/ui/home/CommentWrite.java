@@ -59,8 +59,6 @@ public class CommentWrite extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-
-
         TextView textView_title = (TextView) findViewById(R.id.textView_title);
         ImageView imageView_grade = (ImageView) findViewById(R.id.imageView_grade);
 
