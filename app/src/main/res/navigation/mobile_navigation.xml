@@ -8,25 +8,25 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="com.example.movie.ui.home.HomeFragment"
-        android:label="@string/menu_home"
+        android:label="영화 목록"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_gallery"
         android:name="com.example.movie.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
+        android:label="영화 API"
         tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_slideshow"
         android:name="com.example.movie.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
+        android:label="예매하기"
         tools:layout="@layout/fragment_slideshow" />
 
     <fragment
         android:id="@+id/nav_share"
         android:name="com.example.movie.ui.share.ShareFragment"
-        android:label="@string/menu_share"
+        android:label="사용자 설정"
         tools:layout="@layout/fragment_share" />
 
 </navigation>
